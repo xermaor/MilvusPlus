@@ -33,7 +33,7 @@ public class MilvusInit extends AbstractMilvusClientBuilder implements Initializ
 
     public void initialize() {
         maybePrintBanner();
-        LogLevelController.setLoggingEnabledForPackage("org.dromara.milvus.plus",
+        LogLevelController.setLoggingEnabledForPackage("com.github.xermao.milvus.plus",
                 milvusPropertiesConfiguration.isOpenLog(),
                 milvusPropertiesConfiguration.getLogLevel());
         MilvusProperties milvusProperties = new MilvusProperties(

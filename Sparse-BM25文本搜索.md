@@ -25,7 +25,7 @@
 在实体类中添加 `AnalyzerParams` 注解：
 
 ```java
-import org.dromara.milvus.plus.annotation.*;
+import com.github.xermao.milvus.plus.annotation.*;
 
 public class TextEntity {
 

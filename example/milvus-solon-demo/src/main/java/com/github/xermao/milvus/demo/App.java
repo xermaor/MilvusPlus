@@ -1,4 +1,4 @@
-package org.dromara.solon;
+package com.github.xermao.milvus.demo;
 
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.SolonMain;

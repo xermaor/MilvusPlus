@@ -15,7 +15,7 @@ Milvus 集成了Tantivy来支持其底层倒排索引和基于术语的文本搜
 这将指示 Milvus 对文本进行标记并为指定字段创建倒排索引，从而实现快速高效的文本匹配。
 
 ```java
-import org.dromara.milvus.plus.annotation.*;
+import com.github.xermao.milvus.plus.annotation.*;
 
 public class TextEntity {
 

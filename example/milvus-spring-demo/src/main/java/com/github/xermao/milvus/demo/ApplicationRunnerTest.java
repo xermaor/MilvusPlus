@@ -1,4 +1,4 @@
-package org.dromara.milvus.demo;
+package com.github.xermao.milvus.demo;
 
 import com.google.common.collect.Lists;
 import io.milvus.v2.service.vector.request.ranker.RRFRanker;
@@ -6,14 +6,14 @@ import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.InsertResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.milvus.demo.model.Face;
-import org.dromara.milvus.demo.model.FaceMilvusMapper;
-import org.dromara.milvus.demo.model.Person;
-import org.dromara.milvus.plus.core.conditions.LambdaQueryWrapper;
-import org.dromara.milvus.plus.model.vo.MilvusResp;
-import org.dromara.milvus.plus.model.vo.MilvusResult;
-import org.dromara.milvus.plus.service.MilvusService;
-import org.dromara.milvus.plus.util.GsonUtil;
+import com.github.xermao.milvus.demo.model.Face;
+import com.github.xermao.milvus.demo.model.FaceMilvusMapper;
+import com.github.xermao.milvus.demo.model.Person;
+import com.github.xermao.milvus.plus.core.conditions.LambdaQueryWrapper;
+import com.github.xermao.milvus.plus.model.vo.MilvusResp;
+import com.github.xermao.milvus.plus.model.vo.MilvusResult;
+import com.github.xermao.milvus.plus.service.MilvusService;
+import com.github.xermao.milvus.plus.util.GsonUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;

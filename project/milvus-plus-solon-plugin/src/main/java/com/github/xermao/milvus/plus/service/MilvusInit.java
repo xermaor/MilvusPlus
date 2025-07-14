@@ -16,16 +16,15 @@ public class MilvusInit extends AbstractMilvusClientBuilder implements Lifecycle
     @Bean
     public MilvusClientV2 init(MilvusPropertiesConfiguration milvusPropertiesConfiguration) {
         maybePrintBanner(milvusPropertiesConfiguration);
-        LogLevelController.setLoggingEnabledForPackage("org.dromara.milvus.plus",
+        LogLevelController.setLoggingEnabledForPackage("com.github.xermao.milvus.plus",
                 milvusPropertiesConfiguration.isOpenLog(),
                 milvusPropertiesConfiguration.getLogLevel());
-        MilvusProperties milvusProperties = new MilvusProperties(
+        this.properties=(new MilvusProperties(
                 milvusPropertiesConfiguration.isEnable(), milvusPropertiesConfiguration.getUri(),
                 milvusPropertiesConfiguration.getDbName(), milvusPropertiesConfiguration.getUsername(),
                 milvusPropertiesConfiguration.getPassword(), milvusPropertiesConfiguration.getToken(),
                 milvusPropertiesConfiguration.getPackages()
-        );
-        this.properties=(milvusProperties);
+        ));
         super.initialize();
         return getClient();
     }

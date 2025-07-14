@@ -1,4 +1,4 @@
-package org.dromara.milvus.demo;
+package com.github.xermao.milvus.demo;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

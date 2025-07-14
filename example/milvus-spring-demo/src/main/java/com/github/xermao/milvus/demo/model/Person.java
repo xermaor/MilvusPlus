@@ -1,4 +1,4 @@
-package org.dromara.milvus.demo.model;
+package com.github.xermao.milvus.demo.model;
 
 import lombok.Data;
 

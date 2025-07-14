@@ -1,14 +1,14 @@
-package org.dromara.solon;
+package com.github.xermao.milvus.demo;
 
 import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.InsertResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.milvus.plus.model.vo.MilvusResp;
-import org.dromara.milvus.plus.model.vo.MilvusResult;
-import org.dromara.milvus.plus.util.GsonUtil;
-import org.dromara.solon.test.model.Face;
-import org.dromara.solon.test.test.FaceMilvusMapper;
+import com.github.xermao.milvus.plus.model.vo.MilvusResp;
+import com.github.xermao.milvus.plus.model.vo.MilvusResult;
+import com.github.xermao.milvus.plus.util.GsonUtil;
+import com.github.xermao.milvus.demo.test.model.Face;
+import com.github.xermao.milvus.demo.test.test.FaceMilvusMapper;
 import org.noear.solon.annotation.Controller;
 import org.noear.solon.annotation.Get;
 import org.noear.solon.annotation.Inject;

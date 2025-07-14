@@ -2,7 +2,7 @@
 
 ## 项目简介
 
-> 🔥🔥🔥[MilvusPlus](https://milvus-plus.dromara.org)（简称 MP）是一个 [Milvus](https://milvus.io) 的操作工具，旨在简化与 Milvus 向量数据库的交互，为开发者提供类似 MyBatis-Plus 注解和方法调用风格的直观 API,提高效率而生。
+> 🔥🔥🔥[MilvusPlus]()（简称 MP）是一个 [Milvus](https://milvus.io) 的操作工具，旨在简化与 Milvus 向量数据库的交互，为开发者提供类似 MyBatis-Plus 注解和方法调用风格的直观 API,提高效率而生。
 
 ## 特性
 
@@ -48,12 +48,6 @@ Solon应用支持：
     <version>1.0.0</version>
 </dependency>
 ```
-
-## 需知
-- 2.2.0版本支持数据库版本2.5.x，增强文本搜索能力
-- 2.1.7版本之后groupId修改为 com.github.xermao，版本之前为 org.dromara
-- 2.0.0版本必须使用索引注解定义索引，不然启动报错后，再添加无效，需要先删除集合
-- 2.0.0版本暂未发布 MilvusService 功能
 
 ## 配置文件
 
