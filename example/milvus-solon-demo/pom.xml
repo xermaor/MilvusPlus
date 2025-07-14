@@ -11,7 +11,7 @@
         <relativePath />
     </parent>
 
-    <groupId>com.github.xermao</groupId>
+    <groupId>io.github.xermaor</groupId>
     <artifactId>milvus-solon-demo</artifactId>
     <version>1.0</version>
     
@@ -26,7 +26,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>com.github.xermao</groupId>
+            <groupId>io.github.xermaor</groupId>
             <artifactId>milvus-plus-solon-plugin</artifactId>
             <version>1.0.0</version>
         </dependency>

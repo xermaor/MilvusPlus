@@ -1,7 +1,7 @@
-package com.github.xermao.milvus.plus.conditions;
+package io.github.xermaor.milvus.plus.conditions;
 
-import com.github.xermao.milvus.plus.core.FieldFunction;
-import com.github.xermao.milvus.plus.core.conditions.ConditionBuilder;
+import io.github.xermaor.milvus.plus.core.FieldFunction;
+import io.github.xermaor.milvus.plus.core.conditions.ConditionBuilder;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;

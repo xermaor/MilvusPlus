@@ -7,7 +7,7 @@ milvus:
 #  token: 6fab5641a3156d2666feba14390e4ef4b6d376b5dce91faed303eec91a4bdb82239b70b29eb252b981daa3170516245818d4ee12
   enable: true
   packages:
-    - com.github.xermao.milvus.demo.model
+    - io.github.xermaor.milvus.demo.model
   open-log: true
 #  log-level: WARN
 #  username: db_a5357975ab80da7

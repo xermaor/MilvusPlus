@@ -25,7 +25,7 @@
 在实体类中添加 `AnalyzerParams` 注解：
 
 ```java
-import com.github.xermao.milvus.plus.annotation.*;
+import io.github.xermaor.milvus.plus.annotation.*;
 
 public class TextEntity {
 

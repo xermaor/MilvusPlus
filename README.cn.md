@@ -23,7 +23,7 @@
 
 ```
 <dependency>
-    <groupId>com.github.xermao</groupId>
+    <groupId>io.github.xermaor</groupId>
     <artifactId>milvus-plus-core</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -33,7 +33,7 @@ Spring应用支持：
 
 ```
 <dependency>
-    <groupId>com.github.xermao</groupId>
+    <groupId>io.github.xermaor</groupId>
     <artifactId>milvus-plus-boot-starter</artifactId>
     <version>1.0.0</version>
 </dependency>
@@ -43,7 +43,7 @@ Solon应用支持：
 
 ```
 <dependency>
-    <groupId>com.github.xermao</groupId>
+    <groupId>io.github.xermaor</groupId>
     <artifactId>milvus-plus-solon-plugin</artifactId>
     <version>1.0.0</version>
 </dependency>

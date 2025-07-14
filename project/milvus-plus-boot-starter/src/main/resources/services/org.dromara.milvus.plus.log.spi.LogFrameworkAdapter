@@ -1,3 +1,3 @@
-com.github.xermao.milvus.plus.logger.spi.impl.LogbackAdapter
-com.github.xermao.milvus.plus.logger.spi.impl.Log4j2Adapter
-com.github.xermao.milvus.plus.logger.spi.impl.JulAdapter
+io.github.xermaor.milvus.plus.logger.spi.impl.LogbackAdapter
+io.github.xermaor.milvus.plus.logger.spi.impl.Log4j2Adapter
+io.github.xermaor.milvus.plus.logger.spi.impl.JulAdapter
