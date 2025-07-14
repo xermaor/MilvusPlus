@@ -1,0 +1,3 @@
+com.github.xermao.milvus.plus.logger.spi.impl.LogbackAdapter
+com.github.xermao.milvus.plus.logger.spi.impl.Log4j2Adapter
+com.github.xermao.milvus.plus.logger.spi.impl.JulAdapter
