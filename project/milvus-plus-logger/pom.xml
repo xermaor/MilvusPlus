@@ -11,6 +11,7 @@
     </parent>
 
     <artifactId>milvus-plus-logger</artifactId>
+    <name>milvus-plus-logger</name>
     <packaging>jar</packaging>
 
     <properties>

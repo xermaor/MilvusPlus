@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>milvus-plus-boot-starter</artifactId>
+    <name>milvus-plus-boot-starter</name>
     <packaging>jar</packaging>
 
     <dependencies>

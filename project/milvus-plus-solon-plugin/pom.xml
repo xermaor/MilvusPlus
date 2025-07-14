@@ -10,6 +10,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>milvus-plus-solon-plugin</artifactId>
+    <name>milvus-plus-solon-plugin</name>
     <packaging>jar</packaging>
 
 

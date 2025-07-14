@@ -9,6 +9,7 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
     <artifactId>milvus-plus-core</artifactId>
+    <name>milvus-plus-core</name>
     <packaging>jar</packaging>
 
     <properties>
