@@ -41,20 +41,12 @@
         <revision>1.1.0</revision>
         <maven.compiler.source>${java.version}</maven.compiler.source>
         <maven.compiler.target>${java.version}</maven.compiler.target>
-        <maven-compiler.version>3.11.0</maven-compiler.version>
-        <maven-assembly.version>3.6.0</maven-assembly.version>
-        <maven-resources.version>3.3.1</maven-resources.version>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <project.encoding>UTF-8</project.encoding>
         <solon.version>2.7.6</solon.version>
         <spring-boot.version>3.4.0</spring-boot.version>
         <classgraph.version>4.8.180</classgraph.version>
         <milvus.version>2.6.0</milvus.version>
-        <mica-auto.vaersion>2.3.2</mica-auto.vaersion>
         <java.version>21</java.version>
-        <javapoet.version>1.13.0</javapoet.version>
-        <auto.service.version>1.0</auto.service.version>
-        <nexus-staging-maven-plugin.version>1.6.7</nexus-staging-maven-plugin.version>
     </properties>
     <dependencies>
 
@@ -116,7 +108,7 @@
                 <configuration>
                     <source>${java.version}</source>
                     <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
+                    <encoding>${project.encoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
