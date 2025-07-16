@@ -1,19 +1,17 @@
 package io.github.xermaor.milvus.plus.service;
 
-import io.milvus.v2.client.MilvusClientV2;
-import io.milvus.v2.service.vector.response.DeleteResp;
-import io.milvus.v2.service.vector.response.InsertResp;
-import io.milvus.v2.service.vector.response.UpsertResp;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaDeleteWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaInsertWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaQueryWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaUpdateWrapper;
 import io.github.xermaor.milvus.plus.core.mapper.BaseMilvusMapper;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
-import io.github.xermaor.milvus.plus.service.IAMService;
-import io.github.xermaor.milvus.plus.service.ICMService;
-import io.github.xermaor.milvus.plus.service.IVecMService;
+import io.milvus.v2.client.MilvusClientV2;
+import io.milvus.v2.service.vector.response.DeleteResp;
+import io.milvus.v2.service.vector.response.InsertResp;
+import io.milvus.v2.service.vector.response.UpsertResp;
 import org.noear.solon.Solon;
 import org.noear.solon.annotation.Component;
 
@@ -110,7 +108,7 @@ public class MilvusService implements IAMService, ICMService, IVecMService {
     @SuppressWarnings("unchecked")
     private <T> Class<T> getEntityClass(T entity) {
         if (entity == null) {
-            throw new IllegalArgumentException("Entity must not be null");
+            throw new MilvusPlusException("Entity must not be null");
         }
         return (Class<T>) entity.getClass();
     }

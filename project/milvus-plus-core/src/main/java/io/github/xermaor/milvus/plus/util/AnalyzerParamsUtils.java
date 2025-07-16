@@ -1,12 +1,12 @@
 package io.github.xermaor.milvus.plus.util;
 
-import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 import io.github.xermaor.milvus.plus.annotation.AnalyzerParams;
 import io.github.xermaor.milvus.plus.annotation.CustomFilter;
 import io.github.xermaor.milvus.plus.annotation.Filter;
 import io.github.xermaor.milvus.plus.model.AnalyzerType;
 import io.github.xermaor.milvus.plus.model.BuiltInFilterType;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

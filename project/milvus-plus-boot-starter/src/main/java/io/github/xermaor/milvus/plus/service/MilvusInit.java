@@ -1,73 +1,49 @@
 package io.github.xermaor.milvus.plus.service;
 
-import io.milvus.v2.client.MilvusClientV2;
-import io.github.xermaor.milvus.plus.config.MilvusPropertiesConfiguration;
+import io.github.xermaor.milvus.plus.config.MilvusConfigurationProperties;
 import io.github.xermaor.milvus.plus.logger.LogLevelController;
-import io.github.xermaor.milvus.plus.model.MilvusProperties;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Bean;
-import org.springframework.stereotype.Service;
+import io.milvus.v2.client.MilvusClientV2;
 
-@Service
-public class MilvusInit extends AbstractMilvusClientBuilder implements InitializingBean, DisposableBean {
+public class MilvusInit extends AbstractMilvusClientBuilder {
 
-    private final MilvusPropertiesConfiguration milvusPropertiesConfiguration;
+    private final MilvusConfigurationProperties properties;
 
-    private MilvusClientV2 client;
-
-    public MilvusInit(MilvusPropertiesConfiguration milvusPropertiesConfiguration) {
-        this.milvusPropertiesConfiguration = milvusPropertiesConfiguration;
+    public MilvusInit(MilvusConfigurationProperties properties) {
+        this.properties = properties;
     }
 
     @Override
-    public void afterPropertiesSet() {
-        initialize();
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        // super.close();
-    }
-
     public void initialize() {
         maybePrintBanner();
         LogLevelController.setLoggingEnabledForPackage("io.github.xermaor.milvus.plus",
-                milvusPropertiesConfiguration.isOpenLog(),
-                milvusPropertiesConfiguration.getLogLevel());
-        MilvusProperties milvusProperties = new MilvusProperties(
-                milvusPropertiesConfiguration.isEnable(), milvusPropertiesConfiguration.getUri(),
-                milvusPropertiesConfiguration.getDbName(), milvusPropertiesConfiguration.getUsername(),
-                milvusPropertiesConfiguration.getPassword(), milvusPropertiesConfiguration.getToken(),
-                milvusPropertiesConfiguration.getPackages()
+                properties.isOpenLog(),
+                properties.getLogLevel()
         );
-        BeanUtils.copyProperties(milvusPropertiesConfiguration, milvusProperties);
-        properties = milvusProperties;
+        this.packages = properties.getPackages().toArray(new String[0]);
+        this.initClient();
         super.initialize();
-        client = getClient();
     }
 
-    @Bean
-    public MilvusClientV2 milvusClientV2() {
-        return client;
+    private void initClient() {
+        this.client = new MilvusClientV2(properties.getConnectConfig().toConnectConfig());
+        this.client.retryConfig(properties.getRetryConfig().toRetryConfig());
     }
 
     public void maybePrintBanner() {
-        if (milvusPropertiesConfiguration.isBanner()) {
+        if (properties.isBanner()) {
             printBanner();
         }
     }
 
     public void printBanner() {
         String banner = """
-                          __  __ _ _                    ____  _          \s
-                         |  \\/  (_) |_   ___   _ ___   |  _ \\| |_   _ ___\s
-                         | |\\/| | | \\ \\ / / | | / __|  | |_) | | | | / __|
-                         | |  | | | |\\ V /| |_| \\__ \\  |  __/| | |_| \\__ \\
-                         |_|  |_|_|_| \\_/  \\__,_|___/  |_|   |_|\\__,_|___/
-                        
-                        """;
+                  __  __ _ _                    ____  _          \s
+                 |  \\/  (_) |_   ___   _ ___   |  _ \\| |_   _ ___\s
+                 | |\\/| | | \\ \\ / / | | / __|  | |_) | | | | / __|
+                 | |  | | | |\\ V /| |_| \\__ \\  |  __/| | |_| \\__ \\
+                 |_|  |_|_|_| \\_/  \\__,_|___/  |_|   |_|\\__,_|___/
+                
+                """;
 
         System.out.println(banner);
     }

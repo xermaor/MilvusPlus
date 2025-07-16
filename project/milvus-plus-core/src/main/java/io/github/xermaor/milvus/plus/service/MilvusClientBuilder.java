@@ -9,11 +9,6 @@ public interface MilvusClientBuilder {
     void initialize();
 
     /**
-     * 关闭客户端
-     */
-    void close() throws InterruptedException;
-
-    /**
      * 获取milvus客户端
      *
      * @return MilvusClientV2

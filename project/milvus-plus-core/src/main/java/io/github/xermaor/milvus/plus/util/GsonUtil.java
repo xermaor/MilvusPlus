@@ -22,15 +22,14 @@ public final class GsonUtil {
      * @return 标准的 Gson 实例。
      */
     public static Gson createGson() {
-        if (gson != null) {
-            return gson;
+        if (gson == null) {
+            gson = new GsonBuilder()
+                    .setPrettyPrinting()
+                    .serializeNulls()
+                    .registerTypeAdapter(Date.class, new DateSerializer())
+                    .registerTypeAdapter(Date.class, new DateDeserializer())
+                    .create();
         }
-        gson = new GsonBuilder()
-                .setPrettyPrinting()
-                .serializeNulls()
-                .registerTypeAdapter(Date.class, new DateSerializer())
-                .registerTypeAdapter(Date.class, new DateDeserializer())
-                .create();
         return gson;
     }
 
@@ -112,12 +111,10 @@ public final class GsonUtil {
      * @param <T>     对象的类型
      * @return 转换后的对象
      */
-    public static <T> T convertMapToType(Map<String, Object> map, Type type) {
+    public static <T> T convertToType(JsonObject jsonObject, Type type) {
         Gson gson = createGson();
-        // 将 Map 转换为 JSON 字符串
-        String json = gson.toJson(map);
         // 将 JSON 字符串转换为特定类型的对象
-        return gson.fromJson(json, type);
+        return gson.fromJson(jsonObject, type);
     }
 
     /**
@@ -129,14 +126,11 @@ public final class GsonUtil {
      */
     public static void put(JsonObject jsonObject, String key, Object value) {
         Gson gson = createGson();
-        if (value instanceof String) {
-            jsonObject.addProperty(key, (String) value);
-        } else if (value instanceof Number) {
-            jsonObject.addProperty(key, (Number) value);
-        } else if (value instanceof Boolean) {
-            jsonObject.addProperty(key, (Boolean) value);
-        } else {
-            jsonObject.add(key, gson.toJsonTree(value));
+        switch (value) {
+            case String string -> jsonObject.addProperty(key, string);
+            case Number number -> jsonObject.addProperty(key, number);
+            case Boolean b -> jsonObject.addProperty(key, b);
+            case null, default -> jsonObject.add(key, gson.toJsonTree(value));
         }
     }
 

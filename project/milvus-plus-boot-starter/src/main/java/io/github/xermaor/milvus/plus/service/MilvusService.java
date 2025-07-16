@@ -1,33 +1,27 @@
 package io.github.xermaor.milvus.plus.service;
 
-import io.milvus.v2.client.MilvusClientV2;
-import io.milvus.v2.service.vector.response.DeleteResp;
-import io.milvus.v2.service.vector.response.InsertResp;
-import io.milvus.v2.service.vector.response.UpsertResp;
+import io.github.xermaor.milvus.plus.config.MilvusPlusAutoConfiguration;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaDeleteWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaInsertWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaQueryWrapper;
 import io.github.xermaor.milvus.plus.core.conditions.LambdaUpdateWrapper;
 import io.github.xermaor.milvus.plus.core.mapper.BaseMilvusMapper;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
-import io.github.xermaor.milvus.plus.util.MilvusSpringUtils;
-import org.springframework.stereotype.Service;
+import io.milvus.v2.client.MilvusClientV2;
+import io.milvus.v2.service.vector.response.DeleteResp;
+import io.milvus.v2.service.vector.response.InsertResp;
+import io.milvus.v2.service.vector.response.UpsertResp;
 
 import java.util.Collection;
 import java.util.List;
 
-@Service
 public class MilvusService implements IAMService, ICMService, IVecMService {
-
-    private MilvusClientV2 client;
 
     @Override
     public MilvusClientV2 getClient() {
-        if (client == null) {
-            client = MilvusSpringUtils.getBean(MilvusClientV2.class);
-        }
-        return client;
+        return MilvusPlusAutoConfiguration.milvusInit.getClient();
     }
 
     public <T> MilvusResp<List<MilvusResult<T>>> getById(Class<T> entityClass, Object... ids) {
@@ -101,7 +95,7 @@ public class MilvusService implements IAMService, ICMService, IVecMService {
     @SuppressWarnings("unchecked")
     private <T> Class<T> getEntityClass(T entity) {
         if (entity == null) {
-            throw new IllegalArgumentException("Entity must not be null");
+            throw new MilvusPlusException("Entity must not be null");
         }
         return (Class<T>) entity.getClass();
     }

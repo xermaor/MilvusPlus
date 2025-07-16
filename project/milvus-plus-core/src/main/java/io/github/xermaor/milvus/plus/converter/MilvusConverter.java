@@ -1,6 +1,15 @@
 package io.github.xermaor.milvus.plus.converter;
 
 import io.github.xermaor.milvus.plus.annotation.*;
+import io.github.xermaor.milvus.plus.builder.CollectionSchemaBuilder;
+import io.github.xermaor.milvus.plus.cache.CollectionToPrimaryCache;
+import io.github.xermaor.milvus.plus.cache.ConversionCache;
+import io.github.xermaor.milvus.plus.cache.MilvusCache;
+import io.github.xermaor.milvus.plus.cache.PropertyCache;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.model.MilvusEntity;
+import io.github.xermaor.milvus.plus.util.AnalyzerParamsUtils;
+import io.github.xermaor.milvus.plus.util.GsonUtil;
 import io.milvus.common.clientenum.FunctionType;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.ConsistencyLevel;
@@ -15,14 +24,6 @@ import io.milvus.v2.service.partition.request.HasPartitionReq;
 import io.milvus.v2.service.partition.request.LoadPartitionsReq;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.github.xermaor.milvus.plus.builder.CollectionSchemaBuilder;
-import io.github.xermaor.milvus.plus.cache.CollectionToPrimaryCache;
-import io.github.xermaor.milvus.plus.cache.ConversionCache;
-import io.github.xermaor.milvus.plus.cache.MilvusCache;
-import io.github.xermaor.milvus.plus.cache.PropertyCache;
-import io.github.xermaor.milvus.plus.model.MilvusEntity;
-import io.github.xermaor.milvus.plus.util.AnalyzerParamsUtils;
-import io.github.xermaor.milvus.plus.util.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,7 +84,7 @@ public class MilvusConverter {
     private static MilvusCollection validateAndGetCollectionAnnotation(Class<?> entityClass) {
         MilvusCollection annotation = entityClass.getAnnotation(MilvusCollection.class);
         if (Objects.isNull(annotation)) {
-            throw new IllegalArgumentException("Entity must be annotated with @MilvusCollection");
+            throw new MilvusPlusException("Entity must be annotated with @MilvusCollection");
         }
         return annotation;
     }
@@ -237,7 +238,7 @@ public class MilvusConverter {
                 .ifPresent(dimension -> {
                     builder.dimension(dimension);
                     if (!isListFloat(field)) {
-                        throw new IllegalArgumentException("Vector field type mismatch");
+                        throw new MilvusPlusException("Vector field type mismatch");
                     }
                 });
     }
@@ -346,7 +347,7 @@ public class MilvusConverter {
      */
     public static String getGetMethodName(Field field) {
         if (field == null) {
-            throw new IllegalArgumentException("Field must not be null");
+            throw new MilvusPlusException("Field must not be null");
         }
 
         String prefix = (field.getType() == boolean.class || field.getType() == Boolean.class)
@@ -389,7 +390,7 @@ public class MilvusConverter {
      */
     private static void validateIndexParams(List<IndexParam> indexParams) {
         if (CollectionUtils.isEmpty(indexParams)) {
-            throw new IllegalArgumentException("Index does not exist, please define the index");
+            throw new MilvusPlusException("Index does not exist, please define the index");
         }
     }
 

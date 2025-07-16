@@ -1,5 +1,12 @@
 package io.github.xermaor.milvus.plus.core.conditions;
 
+import io.github.xermaor.milvus.plus.cache.ConversionCache;
+import io.github.xermaor.milvus.plus.converter.SearchRespConverter;
+import io.github.xermaor.milvus.plus.core.FieldFunction;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
+import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
+import io.github.xermaor.milvus.plus.util.GsonUtil;
 import io.milvus.exception.MilvusException;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.ConsistencyLevel;
@@ -13,12 +20,6 @@ import io.milvus.v2.service.vector.response.QueryResp;
 import io.milvus.v2.service.vector.response.SearchResp;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.github.xermaor.milvus.plus.cache.ConversionCache;
-import io.github.xermaor.milvus.plus.converter.SearchRespConverter;
-import io.github.xermaor.milvus.plus.core.FieldFunction;
-import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
-import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
-import io.github.xermaor.milvus.plus.util.GsonUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,20 +30,20 @@ import java.util.stream.Collectors;
 /**
  * 搜索构建器内部类，用于构建搜索请求
  */
-public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWrapper<T>> implements Wrapper<LambdaQueryWrapper<T>, T> {
+public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrapper<T>> implements Wrapper<LambdaQueryWrapper<T>, T> {
 
     private final static Logger log = LoggerFactory.getLogger(LambdaQueryWrapper.class);
-
+    private final List<String> partitionNames = new ArrayList<>();
+    private final List<BaseVector> vectors = new ArrayList<>();
+    private final Map<String, Object> searchParams = new HashMap<>(16);
+    private final List<LambdaQueryWrapper<T>> hybridWrapper = new ArrayList<>();
     private ConversionCache conversionCache;
     private List<String> outputFields;
     private Class<T> entityType;
     private String collectionName;
     private String collectionAlias;
-    private final List<String> partitionNames = new ArrayList<>();
-
     private String annsField;
     private int topK;
-    private final List<BaseVector> vectors = new ArrayList<>();
     private long offset;
     private long limit;
     private int roundDecimal = -1;
@@ -50,10 +51,6 @@ public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWr
     private ConsistencyLevel consistencyLevel;
     private Boolean ignoreGrowing;
     private MilvusClientV2 client;
-    private final Map<String, Object> searchParams = new HashMap<>(16);
-
-    private final List<LambdaQueryWrapper<T>> hybridWrapper = new ArrayList<>();
-
     private BaseRanker ranker;
 
     private long gracefulTime;
@@ -92,13 +89,14 @@ public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWr
         return this;
     }
 
-    public LambdaQueryWrapper<T> partition(FieldFunction<T, ?>... partitionName) {
+    @SafeVarargs
+    public final LambdaQueryWrapper<T> partition(FieldFunction<T, ?>... partitionName) {
         return partition(List.of(partitionName));
     }
 
     public LambdaQueryWrapper<T> partition(Collection<FieldFunction<T, ?>> partitionName) {
         if (CollectionUtils.isEmpty(partitionName)) {
-            throw new RuntimeException("partition collection is empty");
+            throw new MilvusPlusException("partition collection is empty");
         }
         partitionName.forEach(f -> this.partitionNames.add(f.getFieldName(f)));
         return this;
@@ -411,35 +409,27 @@ public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWr
      * @return 搜索响应对象
      */
     public MilvusResp<List<MilvusResult<T>>> query() throws MilvusException {
-        return executeWithRetry(
-                () -> {
-                    if (CollectionUtils.isNotEmpty(hybridWrapper)) {
-                        HybridSearchReq hybridSearchReq = buildHybrid();
-                        log.info("Build HybridSearch Param--> {}", GsonUtil.toJson(hybridSearchReq));
-                        SearchResp searchResp = client.hybridSearch(hybridSearchReq);
-                        return SearchRespConverter.convertSearchRespToMilvusResp(searchResp, entityType);
-                    }
-                    if (!vectors.isEmpty()) {
-                        SearchReq searchReq = buildSearch();
-                        log.info("Build Search Param--> {}", GsonUtil.toJson(searchReq));
-                        SearchResp searchResp = client.search(searchReq);
-                        return SearchRespConverter.convertSearchRespToMilvusResp(searchResp, entityType);
-                    } else {
-                        QueryReq queryReq = buildQuery();
-                        log.info("Build Query param--> {}", GsonUtil.toJson(queryReq));
-                        QueryResp queryResp = client.query(queryReq);
-                        return SearchRespConverter.convertGetRespToMilvusResp(queryResp, entityType);
-                    }
-                },
-                "collection not loaded",
-                maxRetries,
-                entityType,
-                client
-        );
+        if (CollectionUtils.isNotEmpty(hybridWrapper)) {
+            HybridSearchReq hybridSearchReq = buildHybrid();
+            log.info("Build HybridSearch Param--> {}", GsonUtil.toJson(hybridSearchReq));
+            SearchResp searchResp = client.hybridSearch(hybridSearchReq);
+            return SearchRespConverter.convertSearchRespToMilvusResp(searchResp, entityType);
+        } else if (CollectionUtils.isNotEmpty(vectors)) {
+            SearchReq searchReq = buildSearch();
+            log.info("Build Search Param--> {}", GsonUtil.toJson(searchReq));
+            SearchResp searchResp = client.search(searchReq);
+            return SearchRespConverter.convertSearchRespToMilvusResp(searchResp, entityType);
+        } else {
+            QueryReq queryReq = buildQuery();
+            log.info("Build Query param--> {}", GsonUtil.toJson(queryReq));
+            QueryResp queryResp = client.query(queryReq);
+            return SearchRespConverter.convertGetRespToMilvusResp(queryResp, entityType);
+        }
     }
 
 
-    public MilvusResp<List<MilvusResult<T>>> query(FieldFunction<T, ?>... outputFields) throws MilvusException {
+    @SafeVarargs
+    public final MilvusResp<List<MilvusResult<T>>> query(FieldFunction<T, ?>... outputFields) throws MilvusException {
         List<String> otf = new ArrayList<>();
         for (FieldFunction<T, ?> outputField : outputFields) {
             otf.add(outputField.getFieldName(outputField));
@@ -451,19 +441,10 @@ public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWr
     public MilvusResp<Long> count() throws MilvusException {
         this.outputFields = new ArrayList<>();
         this.outputFields.add("count(*)");
-        return executeWithRetry(
-                () -> {
-                    QueryReq queryReq = buildQuery();
-                    log.info("Build Query param--> {}", GsonUtil.toJson(queryReq));
-                    QueryResp queryResp = client.query(queryReq);
-                    return SearchRespConverter.convertGetRespToCount(queryResp);
-                },
-                "collection not loaded",
-                maxRetries,
-                entityType,
-                client
-        );
-
+        QueryReq queryReq = buildQuery();
+        log.info("Build Query param --> {}", GsonUtil.toJson(queryReq));
+        QueryResp queryResp = client.query(queryReq);
+        return SearchRespConverter.convertGetRespToCount(queryResp);
     }
 
     public MilvusResp<List<MilvusResult<T>>> query(String... outputFields) throws MilvusException {
@@ -475,8 +456,8 @@ public class LambdaQueryWrapper<T> extends AbstractChainWrapper<T, LambdaQueryWr
         GetReq.GetReqBuilder<?, ?> builder = GetReq.builder()
                 .collectionName(collectionName)
                 .ids(Arrays.asList(ids));
-        if (!CollectionUtils.isEmpty(partitionNames)) {
-            builder.partitionName(partitionNames.get(0));
+        if (CollectionUtils.isNotEmpty(partitionNames)) {
+            builder.partitionName(partitionNames.getFirst());
         }
         GetReq getReq = builder.build();
         GetResp getResp = client.get(getReq);

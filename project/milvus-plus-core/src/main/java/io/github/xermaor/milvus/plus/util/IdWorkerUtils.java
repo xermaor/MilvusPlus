@@ -1,5 +1,6 @@
 package io.github.xermaor.milvus.plus.util;
 
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -8,7 +9,7 @@ import java.net.NetworkInterface;
 import java.util.Collections;
 import java.util.List;
 
-public class IdWorkerUtils {
+public final class IdWorkerUtils {
 
     private final static Logger log = LoggerFactory.getLogger(IdWorkerUtils.class);
 
@@ -58,7 +59,7 @@ public class IdWorkerUtils {
     public static synchronized long nextId() {
         long timestamp = timeGen();
         if (timestamp < lastTimestamp) {
-            throw new RuntimeException(String.format(
+            throw new MilvusPlusException(String.format(
                     "Clock moved backwards. Refusing to generate id for %d milliseconds", lastTimestamp - timestamp));
         }
 

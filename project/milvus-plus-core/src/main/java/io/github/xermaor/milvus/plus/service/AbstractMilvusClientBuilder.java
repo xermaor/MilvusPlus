@@ -2,72 +2,35 @@ package io.github.xermaor.milvus.plus.service;
 
 import io.github.classgraph.ClassGraph;
 import io.github.classgraph.ScanResult;
-import io.milvus.v2.client.ConnectConfig;
+import io.github.xermaor.milvus.plus.annotation.MilvusCollection;
+import io.github.xermaor.milvus.plus.converter.MilvusConverter;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.model.MilvusEntity;
 import io.milvus.v2.client.MilvusClientV2;
-import io.milvus.v2.service.collection.request.ReleaseCollectionReq;
 import io.milvus.v2.service.utility.response.ListAliasResp;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-import io.github.xermaor.milvus.plus.annotation.MilvusCollection;
-import io.github.xermaor.milvus.plus.cache.CollectionToPrimaryCache;
-import io.github.xermaor.milvus.plus.converter.MilvusConverter;
-import io.github.xermaor.milvus.plus.model.MilvusEntity;
-import io.github.xermaor.milvus.plus.model.MilvusProperties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 public abstract class AbstractMilvusClientBuilder implements MilvusClientBuilder, ICMService {
 
     private final static Logger log = LoggerFactory.getLogger(AbstractMilvusClientBuilder.class);
 
-    protected MilvusProperties properties;
+    protected String[] packages;
     protected MilvusClientV2 client;
 
     @Override
     public void initialize() {
-        if (properties.enable()) {
-            ConnectConfig connectConfig = ConnectConfig.builder()
-                    .uri(properties.uri())
-                    .token(properties.token())
-                    .dbName(properties.dbName())
-                    .username(properties.username())
-                    .password(properties.password())
-                    .build();
-            client = new MilvusClientV2(connectConfig);
-            // 初始化逻辑
-            handler();
-        }
+        handler();
     }
-
-    @Override
-    public void close() throws InterruptedException {
-        if (client != null) {
-            // 释放集合+释放client
-            Set<String> co = CollectionToPrimaryCache.collectionToPrimary.keySet();
-            if (!co.isEmpty()) {
-                for (String name : co) {
-                    ReleaseCollectionReq releaseCollectionReq = ReleaseCollectionReq.builder()
-                            .collectionName(name)
-                            .build();
-                    client.releaseCollection(releaseCollectionReq);
-                }
-            }
-            client.close(5);
-        }
-    }
-
 
     public void handler() {
-        if (Objects.isNull(client)) {
-            log.warn("initialize handler over!");
-        }
-        List<Class<?>> classes = getClass(properties.packages().toArray(new String[0]));
+        List<Class<?>> classes = getClass(packages);
         if (classes.isEmpty()) {
             log.warn("no any collections have been initialized, see if the [packages] parameter is configured correctly. :( !");
             return;
@@ -83,7 +46,7 @@ public abstract class AbstractMilvusClientBuilder implements MilvusClientBuilder
     // 获取指定包下实体类
     private List<Class<?>> getClass(String... packages) {
         if (packages == null || packages.length == 0) {
-            throw new RuntimeException("model package is null, please configure the [packages] parameter");
+            throw new MilvusPlusException("model package is null, please configure the [packages] parameter");
         }
 
         try (ScanResult scanResult = new ClassGraph()
@@ -98,7 +61,7 @@ public abstract class AbstractMilvusClientBuilder implements MilvusClientBuilder
                         try {
                             return Class.forName(classInfo.getName()); // 加载类
                         } catch (ClassNotFoundException e) {
-                            throw new RuntimeException("Failed to load class: " + classInfo.getName(), e);
+                            throw new MilvusPlusException("Failed to load class: " + classInfo.getName(), e);
                         }
                     })
                     .collect(Collectors.toList());

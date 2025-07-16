@@ -13,13 +13,6 @@ import static org.mockito.Mockito.when;
 
 class ConditionBuilderTest {
 
-    static class TestConditionBuilder extends ConditionBuilder<Object, TestConditionBuilder> {
-        @Override
-        protected TestConditionBuilder createNewInstance() {
-            return new TestConditionBuilder();
-        }
-    }
-
     private TestConditionBuilder createBuilderInstance() {
         return new TestConditionBuilder();
     }
@@ -1506,5 +1499,12 @@ class ConditionBuilderTest {
         builder.and(false, b -> b.eq("name", "John").gt("score", 85));
 
         assertTrue(builder.build().isEmpty());
+    }
+
+    static class TestConditionBuilder extends ConditionBuilder<Object, TestConditionBuilder> {
+        @Override
+        protected TestConditionBuilder createNewInstance() {
+            return new TestConditionBuilder();
+        }
     }
 }

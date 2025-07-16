@@ -1,16 +1,20 @@
 package io.github.xermaor.milvus.plus.converter;
 
-import io.milvus.v2.service.vector.response.GetResp;
-import io.milvus.v2.service.vector.response.QueryResp;
-import io.milvus.v2.service.vector.response.SearchResp;
+import com.google.gson.JsonObject;
 import io.github.xermaor.milvus.plus.cache.ConversionCache;
 import io.github.xermaor.milvus.plus.cache.MilvusCache;
 import io.github.xermaor.milvus.plus.cache.PropertyCache;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
 import io.github.xermaor.milvus.plus.util.GsonUtil;
+import io.milvus.v2.service.vector.response.GetResp;
+import io.milvus.v2.service.vector.response.QueryResp;
+import io.milvus.v2.service.vector.response.SearchResp;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 /**
@@ -76,7 +80,7 @@ public class SearchRespConverter {
      */
     private static <T> MilvusResp<List<MilvusResult<T>>> convertQuery(List<QueryResp.QueryResult> queryResults, Class<T> entityType) {
         PropertyCache propertyCache = getCacheComponents(entityType);
-        List<MilvusResult<T>> results = queryResults.stream()
+        List<MilvusResult<T>> results = queryResults.parallelStream()
                 .map(queryResult -> {
                     T entity = convertEntityMap(queryResult.getEntity(), entityType, propertyCache);
                     return new MilvusResult<>(entity, 0.0f, null, null);
@@ -114,13 +118,15 @@ public class SearchRespConverter {
      * @return 转换后的实体对象
      */
     private static <T> T convertEntityMap(Map<String, Object> originalEntityMap, Class<T> entityType, PropertyCache propertyCache) {
-        Map<String, Object> convertedEntityMap = new HashMap<>();
+        JsonObject convertedEntityObject = new JsonObject();
+
         for (Map.Entry<String, Object> entry : originalEntityMap.entrySet()) {
             String key = propertyCache.findKeyByValue(entry.getKey());
             if (key != null) {
-                convertedEntityMap.put(key, entry.getValue());
+                GsonUtil.put(convertedEntityObject, key, entry.getValue());
             }
         }
-        return GsonUtil.convertMapToType(convertedEntityMap, entityType);
+
+        return GsonUtil.convertToType(convertedEntityObject, entityType);
     }
 }

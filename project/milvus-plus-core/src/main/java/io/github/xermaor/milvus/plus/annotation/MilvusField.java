@@ -1,7 +1,7 @@
 package io.github.xermaor.milvus.plus.annotation;
 
-import io.milvus.v2.common.DataType;
 import io.github.xermaor.milvus.plus.model.AnalyzerType;
+import io.milvus.v2.common.DataType;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

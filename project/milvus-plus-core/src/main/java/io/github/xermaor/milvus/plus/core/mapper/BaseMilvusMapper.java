@@ -1,15 +1,16 @@
 package io.github.xermaor.milvus.plus.core.mapper;
 
+import io.github.xermaor.milvus.plus.annotation.MilvusCollection;
+import io.github.xermaor.milvus.plus.cache.ConversionCache;
+import io.github.xermaor.milvus.plus.cache.MilvusCache;
 import io.github.xermaor.milvus.plus.core.conditions.*;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
+import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.service.vector.response.DeleteResp;
 import io.milvus.v2.service.vector.response.InsertResp;
 import io.milvus.v2.service.vector.response.UpsertResp;
-import io.github.xermaor.milvus.plus.annotation.MilvusCollection;
-import io.github.xermaor.milvus.plus.cache.ConversionCache;
-import io.github.xermaor.milvus.plus.cache.MilvusCache;
-import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
-import io.github.xermaor.milvus.plus.model.vo.MilvusResult;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
@@ -104,7 +105,7 @@ public abstract class BaseMilvusMapper<T> {
         // 从实体类上获取@MilvusCollection注解
         MilvusCollection collectionAnnotation = entityType.getAnnotation(MilvusCollection.class);
         if (collectionAnnotation == null) {
-            throw new IllegalStateException("Entity type " + entityType.getName() + " is not annotated with @MilvusCollection.");
+            throw new MilvusPlusException("Entity type " + entityType.getName() + " is not annotated with @MilvusCollection.");
         }
         ConversionCache conversionCache = MilvusCache.milvusCache.get(entityType.getName());
         String collectionName = conversionCache == null ? null : conversionCache.collectionName();

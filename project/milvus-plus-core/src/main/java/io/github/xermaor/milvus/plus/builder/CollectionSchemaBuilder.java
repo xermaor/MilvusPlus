@@ -24,10 +24,6 @@ public class CollectionSchemaBuilder {
     private Boolean enableDynamicField = false;
 
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public CollectionSchemaBuilder(Boolean enableDynamicField, String collectionName, MilvusClientV2 wrapper) {
         this.collectionName = collectionName;
         this.wrapper = wrapper;
@@ -40,6 +36,10 @@ public class CollectionSchemaBuilder {
         this.collectionName = collectionName;
         this.wrapper = wrapper;
         this.schema = MilvusClientV2.CreateSchema();
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public CollectionSchemaBuilder addField(Collection<AddFieldReq> fields) {

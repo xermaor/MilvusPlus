@@ -25,16 +25,17 @@ public class LogAdapterFactory {
 
                     if (adapters.isEmpty()) {
                         throw new IllegalStateException(
-                                "No supported logging framework found! Please add one of:\n" +
-                                        "- Logback: ch.qos.logback:logback-classic\n" +
-                                        "- Log4j2: org.apache.logging.log4j:log4j-core + log4j-slf4j2-impl\n" +
-                                        "- JUL: JDK built-in (no extra dependencies needed)"
+                                """
+                                        No supported logging framework found! Please add one of:
+                                        - Logback: ch.qos.logback:logback-classic
+                                        - Log4j2: org.apache.logging.log4j:log4j-core + log4j-slf4j2-impl
+                                        - JUL: JDK built-in (no extra dependencies needed)"""
                         );
                     }
 
                     // 按优先级排序
                     adapters.sort(Comparator.comparingInt(LogFrameworkAdapter::getPriority));
-                    cachedAdapter = adapters.get(0);
+                    cachedAdapter = adapters.getFirst();
                 }
             }
         }

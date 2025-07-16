@@ -1,14 +1,15 @@
 package io.github.xermaor.milvus.plus.core.conditions;
 
-import io.milvus.exception.MilvusException;
-import io.milvus.v2.client.MilvusClientV2;
-import io.milvus.v2.service.vector.request.DeleteReq;
-import io.milvus.v2.service.vector.response.DeleteResp;
-import org.apache.commons.lang3.StringUtils;
 import io.github.xermaor.milvus.plus.cache.ConversionCache;
 import io.github.xermaor.milvus.plus.core.FieldFunction;
 import io.github.xermaor.milvus.plus.model.vo.MilvusResp;
 import io.github.xermaor.milvus.plus.util.GsonUtil;
+import io.milvus.exception.MilvusException;
+import io.milvus.v2.client.MilvusClientV2;
+import io.milvus.v2.service.vector.request.DeleteReq;
+import io.milvus.v2.service.vector.response.DeleteResp;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,14 +19,13 @@ import java.util.List;
 /**
  * 构建器内部类，用于构建remove请求
  */
-public class LambdaDeleteWrapper<T> extends AbstractChainWrapper<T, LambdaDeleteWrapper<T>> implements Wrapper<LambdaDeleteWrapper<T>, T> {
+public class LambdaDeleteWrapper<T> extends ConditionBuilder<T, LambdaDeleteWrapper<T>> implements Wrapper<LambdaDeleteWrapper<T>, T> {
     private final static Logger log = LoggerFactory.getLogger(LambdaDeleteWrapper.class);
-
+    private final List<Object> ids = new ArrayList<>();
     private Class<T> entityType;
     private String collectionName;
     private String partitionName;
     private MilvusClientV2 client;
-    private final List<Object> ids = new ArrayList<>();
 
     /**
      * 设置删除操作所使用的分区名称。
@@ -87,13 +87,13 @@ public class LambdaDeleteWrapper<T> extends AbstractChainWrapper<T, LambdaDelete
         DeleteReq.DeleteReqBuilder<?, ?> builder = DeleteReq.builder()
                 .collectionName(this.collectionName);
         String filterStr = this.build();
-        if (filterStr != null && !filterStr.isEmpty()) {
+        if (StringUtils.isNotEmpty(filterStr)) {
             builder.filter(filterStr);
         }
-        if (StringUtils.isNotEmpty(partitionName)) {
-            builder.partitionName(partitionName);
+        if (StringUtils.isNotEmpty(this.partitionName)) {
+            builder.partitionName(this.partitionName);
         }
-        if (!ids.isEmpty()) {
+        if (CollectionUtils.isNotEmpty(this.ids)) {
             builder.ids(this.ids);
         }
         // Set other parameters as needed
@@ -109,18 +109,10 @@ public class LambdaDeleteWrapper<T> extends AbstractChainWrapper<T, LambdaDelete
      * @throws MilvusException 当执行过程中的任何异常出现时都会抛出。
      */
     public MilvusResp<DeleteResp> remove() throws MilvusException {
-        return executeWithRetry(
-                () -> {
-                    DeleteReq deleteReq = buildReq();
-                    log.info("build remove param-->{}", GsonUtil.toJson(deleteReq));
-                    DeleteResp delete = client.delete(deleteReq);
-                    return new MilvusResp<>(true, delete);
-                },
-                "collection not loaded",
-                maxRetries,
-                entityType,
-                client
-        );
+        DeleteReq deleteReq = buildReq();
+        log.info("build remove param-->{}", GsonUtil.toJson(deleteReq));
+        DeleteResp delete = client.delete(deleteReq);
+        return new MilvusResp<>(true, delete);
     }
 
     public MilvusResp<DeleteResp> removeById(Object... ids) throws MilvusException {

@@ -1,5 +1,10 @@
 package io.github.xermaor.milvus.plus.service;
 
+import io.github.xermaor.milvus.plus.builder.CollectionSchemaBuilder;
+import io.github.xermaor.milvus.plus.converter.MilvusConverter;
+import io.github.xermaor.milvus.plus.core.FieldFunction;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.model.MilvusEntity;
 import io.milvus.exception.MilvusException;
 import io.milvus.v2.client.MilvusClientV2;
 import io.milvus.v2.common.IndexParam;
@@ -17,10 +22,6 @@ import io.milvus.v2.service.utility.request.DropAliasReq;
 import io.milvus.v2.service.utility.request.ListAliasesReq;
 import io.milvus.v2.service.utility.response.ListAliasResp;
 import org.apache.commons.lang3.StringUtils;
-import io.github.xermaor.milvus.plus.builder.CollectionSchemaBuilder;
-import io.github.xermaor.milvus.plus.converter.MilvusConverter;
-import io.github.xermaor.milvus.plus.core.FieldFunction;
-import io.github.xermaor.milvus.plus.model.MilvusEntity;
 
 import java.util.Collections;
 import java.util.List;
@@ -53,7 +54,7 @@ public interface ICMService {
             //加载集合
             MilvusConverter.loadStatus(milvusEntity, client);
         } catch (MilvusException e) {
-            throw new RuntimeException("Error handling Milvus collection", e);
+            throw new MilvusPlusException("Error handling Milvus collection", e);
         }
     }
 

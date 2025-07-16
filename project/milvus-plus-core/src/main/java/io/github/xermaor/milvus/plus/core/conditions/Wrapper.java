@@ -1,7 +1,7 @@
 package io.github.xermaor.milvus.plus.core.conditions;
 
-import io.milvus.v2.client.MilvusClientV2;
 import io.github.xermaor.milvus.plus.cache.ConversionCache;
+import io.milvus.v2.client.MilvusClientV2;
 
 /**
  * 通用构建器接口

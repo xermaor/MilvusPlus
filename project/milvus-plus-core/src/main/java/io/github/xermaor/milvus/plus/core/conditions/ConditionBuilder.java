@@ -1,7 +1,12 @@
 package io.github.xermaor.milvus.plus.core.conditions;
 
-import org.apache.commons.collections4.CollectionUtils;
+import com.google.gson.JsonObject;
+import io.github.xermaor.milvus.plus.cache.PropertyCache;
 import io.github.xermaor.milvus.plus.core.FieldFunction;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import io.github.xermaor.milvus.plus.util.GsonUtil;
+import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -53,7 +58,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
         Map<String, Object> propertiesMap = new HashMap<>();
         Class<?> clazz = entity.getClass();
         // 获取所有字段（包括继承的）
-        List<Field> allFields = getAllFields(clazz);
+        Collection<Field> allFields = getAllFields(clazz);
         for (Field field : allFields) {
             try {
                 field.setAccessible(true);
@@ -62,16 +67,37 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
                     propertiesMap.put(field.getName(), value);
                 }
             } catch (IllegalAccessException e) {
-                throw new RuntimeException("Failed to access field: " + field.getName(), e);
+                throw new MilvusPlusException("Failed to access field: " + field.getName(), e);
             }
         }
         return propertiesMap;
     }
 
     /**
+     * 将实体对象转换为对应的JsonObject表示形式。
+     *
+     * @param propertyCache 属性缓存对象，包含属性键值对映射及相关信息
+     * @param entity 实体对象，用于生成JsonObject
+     * @return 转换后的JsonObject表示形式
+     */
+    protected JsonObject toJsonObject(PropertyCache propertyCache, T entity) {
+        Map<String, Object> propertiesMap = getPropertiesMap(entity);
+        JsonObject jsonObject = new JsonObject();
+        for (Map.Entry<String, Object> entry : propertiesMap.entrySet()) {
+            String key = entry.getKey();
+            Object value = entry.getValue();
+            String tk = propertyCache.functionToPropertyMap.get(key);
+            if (StringUtils.isNotEmpty(tk)) {
+                GsonUtil.put(jsonObject, tk, value);
+            }
+        }
+        return jsonObject;
+    }
+
+    /**
      * 递归获取类的所有字段
      */
-    private List<Field> getAllFields(Class<?> clazz) {
+    private Collection<Field> getAllFields(Class<?> clazz) {
         return FIELD_CACHE.computeIfAbsent(clazz, c -> {
             List<Field> fields = new ArrayList<>();
             Class<?> currentClass = c;
@@ -113,7 +139,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
         return conditionalExecute(condition, w -> w.textMatch(fieldName, value));
     }
 
-    public W textMatch(String fieldName, List<String> values) {
+    public W textMatch(String fieldName, Collection<String> values) {
         validateFieldName(fieldName);
         validateNotEmpty(values, "文本匹配值列表不能为空");
         String joinedValues = values.stream()
@@ -133,7 +159,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 用于匹配的文本值列表。
      * @return 返回操作后的对象实例。
      */
-    public W textMatch(boolean condition, String fieldName, List<String> values) {
+    public W textMatch(boolean condition, String fieldName, Collection<String> values) {
         return conditionalExecute(condition, w -> w.textMatch(fieldName, values));
     }
 
@@ -167,7 +193,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 字符串列表，表示需要匹配的文本值集合
      * @return 当前对象实例，用于链式调用
      */
-    public W textMatch(FieldFunction<T, ?> fieldFunction, List<String> values) {
+    public W textMatch(FieldFunction<T, ?> fieldFunction, Collection<String> values) {
         return textMatch(getFieldName(fieldFunction), values);
     }
 
@@ -179,7 +205,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 文本匹配的值列表，用于确定匹配的内容。
      * @return 返回操作后的结果对象。
      */
-    public W textMatch(boolean condition, FieldFunction<T, ?> fieldFunction, List<String> values) {
+    public W textMatch(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<String> values) {
         return conditionalExecute(condition, w -> w.textMatch(fieldFunction, values));
     }
 
@@ -664,7 +690,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @return 返回当前调用链的对象实例
      */
     // =============== IN 和 LIKE 操作 ===============
-    public W in(String fieldName, List<?> values) {
+    public W in(String fieldName, Collection<?> values) {
         validateFieldName(fieldName);
         validateNotEmpty(values, "IN 操作的值列表不能为空");
         String valueList = convertValues(values);
@@ -680,7 +706,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values    字段需要匹配的值的列表
      * @return 返回当前调用链的对象实例
      */
-    public W in(boolean condition, String fieldName, List<?> values) {
+    public W in(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.in(fieldName, values));
     }
 
@@ -691,7 +717,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 值列表，用于进行匹配
      * @return 返回当前调用链的对象实例
      */
-    public W in(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W in(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return in(getFieldName(fieldFunction), values);
     }
 
@@ -703,7 +729,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 用于指定 IN 查询的值列表
      * @return 返回当前调用链的对象实例
      */
-    public W in(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W in(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.in(fieldFunction, values));
     }
 
@@ -714,7 +740,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 值列表，字段的值不能在此列表中。
      * @return 返回当前调用链的对象实例
      */
-    public W notIn(String fieldName, List<?> values) {
+    public W notIn(String fieldName, Collection<?> values) {
         return not(builder -> builder.in(fieldName, values));
     }
 
@@ -726,7 +752,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values    值列表，字段值不应在此列表中
      * @return 返回当前调用链的对象实例
      */
-    public W notIn(boolean condition, String fieldName, List<?> values) {
+    public W notIn(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.notIn(fieldName, values));
     }
 
@@ -737,7 +763,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 一个列表，包含不允许的字段值
      * @return 返回当前调用链的对象实例
      */
-    public W notIn(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W notIn(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return not(builder -> builder.in(fieldFunction, values));
     }
 
@@ -749,7 +775,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 需要排除的值列表
      * @return 返回当前调用链的对象实例
      */
-    public W notIn(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W notIn(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.notIn(fieldFunction, values));
     }
 
@@ -1049,7 +1075,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 要检查的值列表
      * @return 返回当前对象以支持方法链调用
      */
-    public W jsonContainsAll(String fieldName, List<?> values) {
+    public W jsonContainsAll(String fieldName, Collection<?> values) {
         return addFunction("JSON_CONTAINS_ALL", fieldName, values);
     }
 
@@ -1061,7 +1087,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 需要校验是否包含于JSON字段中的值列表
      * @return 返回当前对象，用于支持方法链调用
      */
-    public W jsonContainsAll(boolean condition, String fieldName, List<?> values) {
+    public W jsonContainsAll(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.jsonContainsAll(fieldName, values));
     }
 
@@ -1072,7 +1098,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 要检查的值列表
      * @return 返回操作结果的包装对象
      */
-    public W jsonContainsAll(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W jsonContainsAll(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return jsonContainsAll(getFieldName(fieldFunction), values);
     }
 
@@ -1084,7 +1110,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 包含需要检查的值的列表
      * @return 返回当前对象本身，用于链式调用
      */
-    public W jsonContainsAll(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W jsonContainsAll(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.jsonContainsAll(fieldFunction, values));
     }
 
@@ -1095,7 +1121,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 要匹配的值列表
      * @return 返回当前对象实例
      */
-    public W jsonContainsAny(String fieldName, List<?> values) {
+    public W jsonContainsAny(String fieldName, Collection<?> values) {
         return addFunction("JSON_CONTAINS_ANY", fieldName, values);
     }
 
@@ -1107,7 +1133,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 一个列表，包含要匹配的值。
      * @return 返回当前实例，允许方法链调用。
      */
-    public W jsonContainsAny(boolean condition, String fieldName, List<?> values) {
+    public W jsonContainsAny(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.jsonContainsAny(fieldName, values));
     }
 
@@ -1118,7 +1144,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 值的列表，用于和JSON字段进行匹配检查。
      * @return 返回当前对象，支持链式调用。
      */
-    public W jsonContainsAny(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W jsonContainsAny(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return jsonContainsAny(getFieldName(fieldFunction), values);
     }
 
@@ -1130,7 +1156,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 包含要检查的值的列表。
      * @return 返回链式操作的当前对象。
      */
-    public W jsonContainsAny(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W jsonContainsAny(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.jsonContainsAny(fieldFunction, values));
     }
 
@@ -1234,7 +1260,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 值列表，表示需要检查的目标元素集合。
      * @return 当前对象，用于链式调用。
      */
-    public W arrayContainsAll(String fieldName, List<?> values) {
+    public W arrayContainsAll(String fieldName, Collection<?> values) {
         return addFunction("ARRAY_CONTAINS_ALL", fieldName, values);
     }
 
@@ -1246,7 +1272,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values    要检查的值列表
      * @return 若条件满足则返回操作结果，否则返回当前对象
      */
-    public W arrayContainsAll(boolean condition, String fieldName, List<?> values) {
+    public W arrayContainsAll(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.arrayContainsAll(fieldName, values));
     }
 
@@ -1257,7 +1283,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 一个列表，包含需要检查是否存在于数组中的所有值
      * @return 返回满足条件的查询构造器
      */
-    public W arrayContainsAll(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W arrayContainsAll(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return arrayContainsAll(getFieldName(fieldFunction), values);
     }
 
@@ -1269,7 +1295,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 包含在数组中的目标值列表。
      * @return 返回操作后的对象实例。
      */
-    public W arrayContainsAll(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W arrayContainsAll(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.arrayContainsAll(fieldFunction, values));
     }
 
@@ -1280,7 +1306,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 给定的值列表
      * @return 返回当前对象以支持链式调用
      */
-    public W arrayContainsAny(String fieldName, List<?> values) {
+    public W arrayContainsAny(String fieldName, Collection<?> values) {
         return addFunction("ARRAY_CONTAINS_ANY", fieldName, values);
     }
 
@@ -1292,7 +1318,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values    值列表，指定需要检查是否存在于目标数组字段中的一组值；
      * @return 返回操作后的对象。
      */
-    public W arrayContainsAny(boolean condition, String fieldName, List<?> values) {
+    public W arrayContainsAny(boolean condition, String fieldName, Collection<?> values) {
         return conditionalExecute(condition, w -> w.arrayContainsAny(fieldName, values));
     }
 
@@ -1303,7 +1329,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 要匹配的值的列表
      * @return 条件封装对象
      */
-    public W arrayContainsAny(FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W arrayContainsAny(FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return arrayContainsAny(getFieldName(fieldFunction), values);
     }
 
@@ -1315,7 +1341,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      * @param values 要检查的值列表
      * @return 如果条件满足，返回操作执行后的结果；否则返回当前实例
      */
-    public W arrayContainsAny(boolean condition, FieldFunction<T, ?> fieldFunction, List<?> values) {
+    public W arrayContainsAny(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
         return conditionalExecute(condition, w -> w.arrayContainsAny(fieldFunction, values));
     }
 
@@ -1587,7 +1613,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      */
     // =============== 构建方法 ===============
     public String build() {
-        List<String> allFilters = new ArrayList<>();
+        Collection<String> allFilters = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(textMatches)) {
             allFilters.add(String.join(" AND ", textMatches));
         }
@@ -1673,25 +1699,25 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     // =============== 验证方法 ===============
     private void validateFieldName(String fieldName) {
         if (fieldName == null || fieldName.trim().isEmpty()) {
-            throw new IllegalArgumentException("字段名不能为空");
+            throw new MilvusPlusException("字段名不能为空");
         }
     }
 
     private void validateNotNull(Object value, String message) {
         if (value == null) {
-            throw new IllegalArgumentException(message);
+            throw new MilvusPlusException(message);
         }
     }
 
     private void validateNotEmpty(String value, String message) {
         if (value == null || value.trim().isEmpty()) {
-            throw new IllegalArgumentException(message);
+            throw new MilvusPlusException(message);
         }
     }
 
     private void validateNotEmpty(Collection<?> values, String message) {
         if (values == null || values.isEmpty()) {
-            throw new IllegalArgumentException(message);
+            throw new MilvusPlusException(message);
         }
     }
 }

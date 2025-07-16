@@ -1,9 +1,10 @@
 package io.github.xermaor.milvus.plus.core;
 
-import org.apache.commons.lang3.StringUtils;
 import io.github.xermaor.milvus.plus.annotation.MilvusField;
 import io.github.xermaor.milvus.plus.cache.ConversionCache;
 import io.github.xermaor.milvus.plus.cache.MilvusCache;
+import io.github.xermaor.milvus.plus.exception.MilvusPlusException;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.lang.invoke.SerializedLambda;
@@ -70,7 +71,7 @@ public interface FieldFunction<T, R> extends Function<T, R>, Serializable {
             writeReplaceMethod = function.getClass().getDeclaredMethod("writeReplace");
         } catch (NoSuchMethodException e) {
             // 如果没有找到writeReplace方法，抛出运行时异常
-            throw new RuntimeException("未找到writeReplace方法", e);
+            throw new MilvusPlusException("未找到writeReplace方法", e);
         }
         boolean isAccessible = writeReplaceMethod.canAccess(writeReplaceMethod);
         try {
@@ -80,7 +81,7 @@ public interface FieldFunction<T, R> extends Function<T, R>, Serializable {
             return (SerializedLambda) writeReplaceMethod.invoke(function);
         } catch (IllegalAccessException | InvocationTargetException e) {
             // 如果在访问或调用writeReplace方法时发生异常，抛出运行时异常
-            throw new RuntimeException("调用writeReplace方法失败", e);
+            throw new MilvusPlusException("调用writeReplace方法失败", e);
         } finally {
             // 恢复writeReplace方法的原始访问性，以避免潜在的安全问题
             writeReplaceMethod.setAccessible(isAccessible);
@@ -110,7 +111,7 @@ public interface FieldFunction<T, R> extends Function<T, R>, Serializable {
             MilvusField annotation = field.getAnnotation(MilvusField.class);
             return annotation != null && StringUtils.isNotBlank(annotation.name()) ? annotation.name() : fieldName;
         } catch (ClassNotFoundException | NoSuchFieldException e) {
-            throw new RuntimeException(e);
+            throw new MilvusPlusException(e);
         }
     }
 
