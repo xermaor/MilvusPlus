@@ -15,8 +15,9 @@ public class MilvusInit extends AbstractMilvusClientBuilder {
     @Override
     public void initialize() {
         maybePrintBanner();
-        LogLevelController.setLoggingEnabledForPackage("io.github.xermaor.milvus.plus",
-                properties.isOpenLog(),
+        LogLevelController.setLoggingEnabledForPackage(
+                "io.github.xermaor.milvus.plus",
+                properties.getOpenLog(),
                 properties.getLogLevel()
         );
         this.packages = properties.getPackages().toArray(new String[0]);
@@ -30,7 +31,7 @@ public class MilvusInit extends AbstractMilvusClientBuilder {
     }
 
     public void maybePrintBanner() {
-        if (properties.isBanner()) {
+        if (properties.getBanner()) {
             printBanner();
         }
     }

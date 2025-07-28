@@ -233,14 +233,10 @@ public class MilvusConverter {
      * 处理向量字段维度
      */
     private static void handleVectorDimension(Field field, MilvusField fieldAnnotation, AddFieldReq.AddFieldReqBuilder<?, ?> builder) {
+
         Optional.of(fieldAnnotation.dimension())
                 .filter(dimension -> dimension > 0)
-                .ifPresent(dimension -> {
-                    builder.dimension(dimension);
-                    if (!isListFloat(field)) {
-                        throw new MilvusPlusException("Vector field type mismatch");
-                    }
-                });
+                .ifPresent(builder::dimension);
     }
 
     /**

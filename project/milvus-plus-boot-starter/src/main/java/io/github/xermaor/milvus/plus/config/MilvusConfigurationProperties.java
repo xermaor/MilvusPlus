@@ -2,8 +2,9 @@ package io.github.xermaor.milvus.plus.config;
 
 import io.milvus.v2.client.ConnectConfig;
 import io.milvus.v2.client.RetryConfig;
-import lombok.Data;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 import java.util.List;
@@ -12,40 +13,111 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author xermao
  **/
-@Data
 @ConfigurationProperties(prefix = "milvus")
 public class MilvusConfigurationProperties {
     @NestedConfigurationProperty
-    private final ConnectConfiguration connectConfig = new ConnectConfiguration();
-    private boolean enable;
-    private List<String> packages;
-    private boolean openLog;
-    private String logLevel;
-    private boolean banner;
+    private final ConnectConfiguration connectConfig;
+    private final Boolean enable;
+    private final List<String> packages;
+    private final Boolean openLog;
+    private final String logLevel;
+    private final Boolean banner;
     @NestedConfigurationProperty
-    private RetryConfiguration retryConfig = new RetryConfiguration();
+    private final RetryConfiguration retryConfig;
 
-    @Data
-    public static class ConnectConfiguration {
-        private String uri;
-        private String token;
-        private String username;
-        private String password;
-        private String dbName;
-        private long connectTimeoutMs = 10000;
-        private long keepAliveTimeMs = 55000;
-        private long keepAliveTimeoutMs = 20000;
-        private boolean keepAliveWithoutCalls = false;
-        private long rpcDeadlineMs = 0; // Disabling deadline
+    @ConstructorBinding
+    public MilvusConfigurationProperties(
+            ConnectConfiguration connectConfig, Boolean enable,
+            List<String> packages, Boolean openLog, String logLevel,
+            Boolean banner, RetryConfiguration retryConfig) {
+        this.connectConfig = connectConfig != null ? connectConfig : new ConnectConfiguration(null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        this.enable = enable != null ? enable : false;
+        this.packages = packages != null ? packages : List.of();
+        this.openLog = openLog != null ? openLog : false;
+        this.logLevel = logLevel != null ? logLevel : "INFO";
+        this.banner = banner != null ? banner : true;
+        this.retryConfig = retryConfig != null ? retryConfig : new RetryConfiguration(
+                null, null, null,
+                null, null, null
+        );
+    }
 
-        private String clientKeyPath;
-        private String clientPemPath;
-        private String caPemPath;
-        private String serverPemPath;
-        private String serverName;
-        private String proxyAddress;
-        private Boolean secure = false;
-        private long idleTimeoutMs = TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
+    public ConnectConfiguration getConnectConfig() {
+        return connectConfig;
+    }
+
+    public Boolean getEnable() {
+        return enable;
+    }
+
+    public List<String> getPackages() {
+        return packages;
+    }
+
+    public Boolean getOpenLog() {
+        return openLog;
+    }
+
+    public String getLogLevel() {
+        return logLevel;
+    }
+
+    public Boolean getBanner() {
+        return banner;
+    }
+
+    public RetryConfiguration getRetryConfig() {
+        return retryConfig;
+    }
+
+    @Override
+    public String toString() {
+        return "MilvusConfigurationProperties{" +
+                "connectConfig=" + connectConfig +
+                ", enable=" + enable +
+                ", packages=" + packages +
+                ", openLog=" + openLog +
+                ", logLevel='" + logLevel + '\'' +
+                ", banner=" + banner +
+                ", retryConfig=" + retryConfig +
+                '}';
+    }
+
+    /**
+     * @param rpcDeadlineMs  Disabling deadline */
+    public record ConnectConfiguration(String uri, String token, String username, String password, String dbName,
+                                       Long connectTimeoutMs, Long keepAliveTimeMs, Long keepAliveTimeoutMs,
+                                       Boolean keepAliveWithoutCalls, Long rpcDeadlineMs, String clientKeyPath,
+                                       String clientPemPath, String caPemPath, String serverPemPath, String serverName,
+                                       String proxyAddress, Boolean secure, Long idleTimeoutMs) {
+        @ConstructorBinding
+        public ConnectConfiguration(
+                String uri, String token, String username, String password,
+                String dbName, Long connectTimeoutMs, Long keepAliveTimeMs,
+                Long keepAliveTimeoutMs, Boolean keepAliveWithoutCalls,
+                Long rpcDeadlineMs, String clientKeyPath, String clientPemPath,
+                String caPemPath, String serverPemPath, String serverName,
+                String proxyAddress, Boolean secure, Long idleTimeoutMs
+        ) {
+            this.uri = uri;
+            this.token = token;
+            this.username = username;
+            this.password = password;
+            this.dbName = dbName;
+            this.clientKeyPath = clientKeyPath;
+            this.clientPemPath = clientPemPath;
+            this.caPemPath = caPemPath;
+            this.serverPemPath = serverPemPath;
+            this.serverName = serverName;
+            this.proxyAddress = proxyAddress;
+            this.connectTimeoutMs = connectTimeoutMs != null ? connectTimeoutMs : 10000;
+            this.keepAliveTimeMs = keepAliveTimeMs != null ? keepAliveTimeMs : 55000;
+            this.keepAliveTimeoutMs = keepAliveTimeoutMs != null ? keepAliveTimeoutMs : 20000;
+            this.keepAliveWithoutCalls = keepAliveWithoutCalls != null ? keepAliveWithoutCalls : false;
+            this.rpcDeadlineMs = rpcDeadlineMs != null ? rpcDeadlineMs : 0;
+            this.secure = secure != null ? secure : false;
+            this.idleTimeoutMs = idleTimeoutMs != null ? idleTimeoutMs : TimeUnit.MILLISECONDS.convert(24, TimeUnit.HOURS);
+        }
 
         public ConnectConfig toConnectConfig() {
             return ConnectConfig.builder()
@@ -69,16 +141,49 @@ public class MilvusConfigurationProperties {
                     .idleTimeoutMs(this.idleTimeoutMs)
                     .build();
         }
+
+        @NotNull
+        @Override
+        public String toString() {
+            return "ConnectConfiguration{" +
+                    "uri='" + uri + '\'' +
+                    ", token='" + token + '\'' +
+                    ", username='" + username + '\'' +
+                    ", password='" + password + '\'' +
+                    ", dbName='" + dbName + '\'' +
+                    ", connectTimeoutMs=" + connectTimeoutMs +
+                    ", keepAliveTimeMs=" + keepAliveTimeMs +
+                    ", keepAliveTimeoutMs=" + keepAliveTimeoutMs +
+                    ", keepAliveWithoutCalls=" + keepAliveWithoutCalls +
+                    ", rpcDeadlineMs=" + rpcDeadlineMs +
+                    ", clientKeyPath='" + clientKeyPath + '\'' +
+                    ", clientPemPath='" + clientPemPath + '\'' +
+                    ", caPemPath='" + caPemPath + '\'' +
+                    ", serverPemPath='" + serverPemPath + '\'' +
+                    ", serverName='" + serverName + '\'' +
+                    ", proxyAddress='" + proxyAddress + '\'' +
+                    ", secure=" + secure +
+                    ", idleTimeoutMs=" + idleTimeoutMs +
+                    '}';
+        }
     }
 
-    @Data
-    public static class RetryConfiguration {
-        private int maxRetryTimes = 75;
-        private long initialBackOffMs = 10;
-        private long maxBackOffMs = 3000;
-        private int backOffMultiplier = 3;
-        private boolean retryOnRateLimit = true;
-        private long maxRetryTimeoutMs = 0;
+
+    public record RetryConfiguration(Integer maxRetryTimes, Long initialBackOffMs, Long maxBackOffMs,
+                                     Integer backOffMultiplier, Boolean retryOnRateLimit, Long maxRetryTimeoutMs) {
+        @ConstructorBinding
+        public RetryConfiguration(
+                Integer maxRetryTimes, Long initialBackOffMs,
+                Long maxBackOffMs, Integer backOffMultiplier,
+                Boolean retryOnRateLimit, Long maxRetryTimeoutMs
+        ) {
+            this.maxRetryTimes = maxRetryTimes != null ? maxRetryTimes : 75;
+            this.initialBackOffMs = initialBackOffMs != null ? initialBackOffMs : 10;
+            this.maxBackOffMs = maxBackOffMs != null ? maxBackOffMs : 3000;
+            this.backOffMultiplier = backOffMultiplier != null ? backOffMultiplier : 3;
+            this.retryOnRateLimit = retryOnRateLimit != null ? retryOnRateLimit : true;
+            this.maxRetryTimeoutMs = maxRetryTimeoutMs != null ? maxRetryTimeoutMs : 0;
+        }
 
         public RetryConfig toRetryConfig() {
             return RetryConfig.builder()
@@ -89,6 +194,18 @@ public class MilvusConfigurationProperties {
                     .retryOnRateLimit(this.retryOnRateLimit)
                     .maxRetryTimeoutMs(this.maxRetryTimeoutMs)
                     .build();
+        }
+
+        @Override
+        public String toString() {
+            return "RetryConfiguration{" +
+                    "maxRetryTimes=" + maxRetryTimes +
+                    ", initialBackOffMs=" + initialBackOffMs +
+                    ", maxBackOffMs=" + maxBackOffMs +
+                    ", backOffMultiplier=" + backOffMultiplier +
+                    ", retryOnRateLimit=" + retryOnRateLimit +
+                    ", maxRetryTimeoutMs=" + maxRetryTimeoutMs +
+                    '}';
         }
     }
 }
