@@ -121,7 +121,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W textMatch(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "文本匹配值不能为空");
-        String match = String.format("TEXT_MATCH(%s, '%s')",
+        String match = String.format("TEXT_MATCH(%s, \"%s\")",
                 wrapFieldName(fieldName), escapeValue(value));
         textMatches.add(match);
         return (W) this;
@@ -145,7 +145,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
         String joinedValues = values.stream()
                 .map(this::escapeValue)
                 .collect(Collectors.joining(" "));
-        String match = String.format("TEXT_MATCH(%s, '%s')",
+        String match = String.format("TEXT_MATCH(%s, \"%s\")",
                 wrapFieldName(fieldName), joinedValues);
         textMatches.add(match);
         return (W) this;
@@ -500,7 +500,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
         validateNotNull(start, "范围开始值不能为空");
         validateNotNull(end, "范围结束值不能为空");
         String wrappedField = wrapFieldName(fieldName);
-        String filter = String.format("%s >= %s AND %s <= %s",
+        String filter = String.format("%s >= %s && %s <= %s",
                 wrappedField, convertValue(start), wrappedField, convertValue(end));
         filters.add(filter);
         return (W) this;
@@ -602,7 +602,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      */
     public W isNull(String fieldName) {
         validateFieldName(fieldName);
-        filters.add(wrapFieldName(fieldName) + " IS NULL");
+        filters.add(wrapFieldName(fieldName) + " is null");
         return (W) this;
     }
 
@@ -646,7 +646,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
      */
     public W isNotNull(String fieldName) {
         validateFieldName(fieldName);
-        filters.add(wrapFieldName(fieldName) + " IS NOT NULL");
+        filters.add(wrapFieldName(fieldName) + " is not null");
         return (W) this;
     }
 
@@ -683,18 +683,18 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 添加 IN 操作条件到查询过滤器中。
+     * 添加 in 操作条件到查询过滤器中。
      *
-     * @param fieldName 字段名称，表示需要进行 IN 操作的字段
-     * @param values 值列表，表示 IN 操作中的值集合
+     * @param fieldName 字段名称，表示需要进行 in 操作的字段
+     * @param values 值列表，表示 in 操作中的值集合
      * @return 返回当前调用链的对象实例
      */
-    // =============== IN 和 LIKE 操作 ===============
+    // =============== in 和 like 操作 ===============
     public W in(String fieldName, Collection<?> values) {
         validateFieldName(fieldName);
         validateNotEmpty(values, "IN 操作的值列表不能为空");
         String valueList = convertValues(values);
-        filters.add(wrapFieldName(fieldName) + " IN " + valueList);
+        filters.add(wrapFieldName(fieldName) + " in " + valueList);
         return (W) this;
     }
 
@@ -722,11 +722,11 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 在指定条件下应用 IN 查询条件。
+     * 在指定条件下应用 in 查询条件。
      *
      * @param condition 是否执行该条件，true 表示执行，false 表示不执行
      * @param fieldFunction 字段函数，用于指定操作的字段
-     * @param values 用于指定 IN 查询的值列表
+     * @param values 用于指定 in 查询的值列表
      * @return 返回当前调用链的对象实例
      */
     public W in(boolean condition, FieldFunction<T, ?> fieldFunction, Collection<?> values) {
@@ -768,9 +768,9 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 用于构建条件为“NOT IN”的查询语句。
+     * 用于构建条件为“not IN”的查询语句。
      *
-     * @param condition 条件是否成立，只有当条件为 true 时，才会执行“NOT IN”操作
+     * @param condition 条件是否成立，只有当条件为 true 时，才会执行“not IN”操作
      * @param fieldFunction 用于指定字段的函数
      * @param values 需要排除的值列表
      * @return 返回当前调用链的对象实例
@@ -789,7 +789,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W like(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "LIKE 操作的值不能为空");
-        filters.add(String.format("%s LIKE '%%%s%%'",
+        filters.add(String.format("%s like \"%%%s%%\"",
                 wrapFieldName(fieldName), escapeValue(value)));
         return (W) this;
     }
@@ -830,10 +830,10 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 用于添加一个 "NOT LIKE" 条件到查询中。
+     * 用于添加一个 "not like" 条件到查询中。
      *
-     * @param fieldName 字段的名称，用于指定需要应用 "NOT LIKE" 条件的字段。
-     * @param value 字段的值，用于指定 "NOT LIKE" 条件的匹配模式，通常包含通配符。
+     * @param fieldName 字段的名称，用于指定需要应用 "not like" 条件的字段。
+     * @param value 字段的值，用于指定 "not like" 条件的匹配模式，通常包含通配符。
      * @return 返回当前调用链的对象实例
      */
     public W notLike(String fieldName, String value) {
@@ -853,7 +853,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 添加一个“NOT LIKE”条件到查询中，用于指定字段值不符合给定的模式。
+     * 添加一个“not like”条件到查询中，用于指定字段值不符合给定的模式。
      *
      * @param fieldFunction 字段的函数引用，用于解析字段。
      * @param value 用于比较的模式字符串。
@@ -864,11 +864,11 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 根据指定条件对查询添加 NOT LIKE 语句。
+     * 根据指定条件对查询添加 not like 语句。
      *
-     * @param condition 条件是否满足，若为 true，则执行 NOT LIKE 操作，否则忽略该操作
-     * @param fieldFunction 字段的函数，用于指定 NOT LIKE 操作的字段
-     * @param value 模式字符串，表示 NOT LIKE 的匹配值
+     * @param condition 条件是否满足，若为 true，则执行 not like 操作，否则忽略该操作
+     * @param fieldFunction 字段的函数，用于指定 not like 操作的字段
+     * @param value 模式字符串，表示 not like 的匹配值
      * @return 返回当前调用链的对象实例
      */
     public W notLike(boolean condition, FieldFunction<T, ?> fieldFunction, String value) {
@@ -876,7 +876,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 在指定字段上添加左匹配的 LIKE 筛选条件。
+     * 在指定字段上添加左匹配的 like 筛选条件。
      *
      * @param fieldName 字段名，需要保证字段名合法且非空
      * @param value 匹配值，不能为空
@@ -885,7 +885,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W likeLeft(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "LIKE 操作的值不能为空");
-        filters.add(String.format("%s LIKE '%s%%'",
+        filters.add(String.format("%s like \"%s%%\"",
                 wrapFieldName(fieldName), escapeValue(value)));
         return (W) this;
     }
@@ -935,7 +935,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W likeRight(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "LIKE 操作的值不能为空");
-        filters.add(String.format("%s LIKE '%%%s'",
+        filters.add(String.format("%s like \"%%%s\"",
                 wrapFieldName(fieldName), escapeValue(value)));
         return (W) this;
     }
@@ -1407,7 +1407,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
             String leftFilter = combineFiltersWithOperator(filters, "AND");
             String rightFilter = combineFiltersWithOperator(otherBuilder.filters, "AND");
             filters.clear();
-            filters.add("(" + leftFilter + " AND " + rightFilter + ")");
+            filters.add("(" + leftFilter + " && " + rightFilter + ")");
         } else if (CollectionUtils.isNotEmpty(otherBuilder.filters)) {
             filters.addAll(otherBuilder.filters);
         }
@@ -1463,7 +1463,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
             String leftFilter = combineFiltersWithOperator(filters, "AND");
             String rightFilter = combineFiltersWithOperator(otherBuilder.filters, "AND");
             filters.clear();
-            filters.add("(" + leftFilter + " OR " + rightFilter + ")");
+            filters.add("(" + leftFilter + " || " + rightFilter + ")");
         } else if (!otherBuilder.filters.isEmpty()) {
             filters.addAll(otherBuilder.filters);
         }
@@ -1506,15 +1506,15 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 取反当前过滤条件，将过滤条件内容用 NOT 运算符包裹起来。
+     * 取反当前过滤条件，将过滤条件内容用 not 运算符包裹起来。
      * 如果当前过滤条件列表不为空，将条件组合为字符串并取反。
      *
      * @return 返回当前对象实例，支持链式调用。
      */
     public W not() {
         if (CollectionUtils.isNotEmpty(filters)) {
-            String filterContent = filters.size() == 1 ? filters.getFirst() : String.join(" AND ", filters);
-            String negatedFilter = "NOT (" + filterContent + ")";
+            String filterContent = filters.size() == 1 ? filters.getFirst() : String.join(" && ", filters);
+            String negatedFilter = "not (" + filterContent + ")";
             filters.clear();
             filters.add(negatedFilter);
         }
@@ -1534,14 +1534,14 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     /**
      * 将另一个条件构建器的条件取反并添加到当前对象的条件集合中。
      *
-     * @param other 需要进行 NOT 操作的条件构建器，不能为空
+     * @param other 需要进行 not 操作的条件构建器，不能为空
      * @return 当前对象自身，用于链式调用
      */
     public W not(W other) {
-        validateNotNull(other, "The conditional builder for NOT operation cannot be empty");
+        validateNotNull(other, "The conditional builder for not operation cannot be empty");
         if (CollectionUtils.isNotEmpty(other.filters)) {
             String filterContent = other.filters.size() == 1 ? other.filters.getFirst() : String.join(" AND ", other.filters);
-            String negatedFilter = "NOT (" + filterContent + ")";
+            String negatedFilter = "not (" + filterContent + ")";
             filters.add(negatedFilter);
         }
         return (W) this;
@@ -1559,13 +1559,13 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     /**
-     * 对给定条件构建器执行 NOT 操作。
+     * 对给定条件构建器执行 not 操作。
      *
      * @param conditionBuilder 用于构建条件的函数式接口，不能为 null。
-     * @return 执行 NOT 操作后的新条件构建器实例。
+     * @return 执行 not 操作后的新条件构建器实例。
      */
     public W not(Function<W, W> conditionBuilder) {
-        validateNotNull(conditionBuilder, "The conditional builder function for NOT operation cannot be empty");
+        validateNotNull(conditionBuilder, "The conditional builder function for not operation cannot be empty");
         // 创建新的条件构建器实例用于lambda表达式
         W tempBuilder = createNewInstance();
         return not(conditionBuilder.apply(tempBuilder));
@@ -1615,12 +1615,12 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public String build() {
         Collection<String> allFilters = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(textMatches)) {
-            allFilters.add(String.join(" AND ", textMatches));
+            allFilters.add(String.join(" && ", textMatches));
         }
         if (CollectionUtils.isNotEmpty(filters)) {
             allFilters.addAll(filters);
         }
-        return allFilters.isEmpty() ? "" : String.join(" AND ", allFilters);
+        return allFilters.isEmpty() ? "" : String.join(" && ", allFilters);
     }
 
     // =============== 工具方法 ===============
@@ -1641,7 +1641,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     protected String convertValue(Object value) {
         return switch (value) {
             case null -> "NULL";
-            case String string -> "'" + escapeValue(string) + "'";
+            case String string -> "\"" + escapeValue(string) + "\"";
             case Collection<?> collection -> convertValues(collection);
             default -> value.toString();
         };
@@ -1671,7 +1671,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     }
 
     private String escapeValue(String value) {
-        return value.replace("'", "\\'").replace("\\", "\\\\");
+        return value.replace("\"", "\\\"").replace("\\", "\\\\");
     }
 
     private W addFilter(String fieldName, String operator, Object value) {

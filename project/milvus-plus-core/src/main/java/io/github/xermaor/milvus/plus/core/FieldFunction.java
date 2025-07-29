@@ -64,6 +64,7 @@ public interface FieldFunction<T, R> extends Function<T, R>, Serializable {
      * @param function 要序列化的函数对象
      * @return 序列化后的lambda表达式
      */
+    @SuppressWarnings("all")
     default SerializedLambda extractSerializedLambda(FieldFunction<T, ?> function) {
         Method writeReplaceMethod;
         try {
@@ -73,7 +74,7 @@ public interface FieldFunction<T, R> extends Function<T, R>, Serializable {
             // 如果没有找到writeReplace方法，抛出运行时异常
             throw new MilvusPlusException("未找到writeReplace方法", e);
         }
-        boolean isAccessible = writeReplaceMethod.canAccess(writeReplaceMethod);
+        boolean isAccessible = writeReplaceMethod.isAccessible();
         try {
             // 设置writeReplace方法为可访问，以便可以调用它
             writeReplaceMethod.setAccessible(true);

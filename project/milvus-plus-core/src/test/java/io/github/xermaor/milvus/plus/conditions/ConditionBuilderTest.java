@@ -21,7 +21,7 @@ class ConditionBuilderTest {
     void testTextMatchSingleValue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.textMatch("name", "value");
-        assertEquals("TEXT_MATCH(name, 'value')", builder.build());
+        assertEquals("TEXT_MATCH(name, \"value\")", builder.build());
     }
 
     @Test
@@ -35,14 +35,14 @@ class ConditionBuilderTest {
     void testTextMatchConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.textMatch(true, "name", "value");
-        assertEquals("TEXT_MATCH(name, 'value')", builder.build());
+        assertEquals("TEXT_MATCH(name, \"value\")", builder.build());
     }
 
     @Test
     void testTextMatchListValues() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.textMatch("name", List.of("val1", "val2"));
-        assertEquals("TEXT_MATCH(name, 'val1 val2')", builder.build());
+        assertEquals("TEXT_MATCH(name, \"val1 val2\")", builder.build());
     }
 
     @Test
@@ -56,7 +56,7 @@ class ConditionBuilderTest {
     void testTextMatchConditionTrueWithList() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.textMatch(true, "name", List.of("val1", "val2"));
-        assertEquals("TEXT_MATCH(name, 'val1 val2')", builder.build());
+        assertEquals("TEXT_MATCH(name, \"val1 val2\")", builder.build());
     }
 
     @Test
@@ -66,7 +66,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.textMatch(fieldFunction, "value");
-        assertEquals("TEXT_MATCH(fieldName, 'value')", builder.build());
+        assertEquals("TEXT_MATCH(fieldName, \"value\")", builder.build());
     }
 
     @Test
@@ -86,7 +86,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.textMatch(true, fieldFunction, "value");
-        assertEquals("TEXT_MATCH(fieldName, 'value')", builder.build());
+        assertEquals("TEXT_MATCH(fieldName, \"value\")", builder.build());
     }
 
     @Test
@@ -96,7 +96,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.textMatch(fieldFunction, List.of("val1", "val2"));
-        assertEquals("TEXT_MATCH(fieldName, 'val1 val2')", builder.build());
+        assertEquals("TEXT_MATCH(fieldName, \"val1 val2\")", builder.build());
     }
 
     @Test
@@ -116,7 +116,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.textMatch(true, fieldFunction, List.of("val1", "val2"));
-        assertEquals("TEXT_MATCH(fieldName, 'val1 val2')", builder.build());
+        assertEquals("TEXT_MATCH(fieldName, \"val1 val2\")", builder.build());
     }
 
     @Test
@@ -147,7 +147,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("name");
 
         builder.eq(fieldFunction, "John");
-        assertEquals("name == 'John'", builder.build());
+        assertEquals("name == \"John\"", builder.build());
     }
 
     @Test
@@ -167,14 +167,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("name");
 
         builder.eq(true, fieldFunction, "John");
-        assertEquals("name == 'John'", builder.build());
+        assertEquals("name == \"John\"", builder.build());
     }
 
     @Test
     void testNeSingleValue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.ne("status", "inactive");
-        assertEquals("status != 'inactive'", builder.build());
+        assertEquals("status != \"inactive\"", builder.build());
     }
 
     @Test
@@ -188,7 +188,7 @@ class ConditionBuilderTest {
     void testNeConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.ne(true, "status", "inactive");
-        assertEquals("status != 'inactive'", builder.build());
+        assertEquals("status != \"inactive\"", builder.build());
     }
 
     @Test
@@ -198,7 +198,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.ne(fieldFunction, "inactive");
-        assertEquals("status != 'inactive'", builder.build());
+        assertEquals("status != \"inactive\"", builder.build());
     }
 
     @Test
@@ -218,7 +218,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.ne(true, fieldFunction, "inactive");
-        assertEquals("status != 'inactive'", builder.build());
+        assertEquals("status != \"inactive\"", builder.build());
     }
 
     @Test
@@ -429,7 +429,7 @@ class ConditionBuilderTest {
     void testBetweenWithValidValues() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.between("age", 18, 30);
-        assertEquals("age >= 18 AND age <= 30", builder.build());
+        assertEquals("age >= 18 && age <= 30", builder.build());
     }
 
     @Test
@@ -443,7 +443,7 @@ class ConditionBuilderTest {
     void testBetweenWithConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.between(true, "age", 18, 30);
-        assertEquals("age >= 18 AND age <= 30", builder.build());
+        assertEquals("age >= 18 && age <= 30", builder.build());
     }
 
     @Test
@@ -453,7 +453,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("testField");
 
         builder.between(fieldFunction, 10, 20);
-        assertEquals("testField >= 10 AND testField <= 20", builder.build());
+        assertEquals("testField >= 10 && testField <= 20", builder.build());
     }
 
     @Test
@@ -473,14 +473,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("testField");
 
         builder.between(true, fieldFunction, 10, 20);
-        assertEquals("testField >= 10 AND testField <= 20", builder.build());
+        assertEquals("testField >= 10 && testField <= 20", builder.build());
     }
 
     @Test
     void testNotBetweenWithValidValues() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notBetween("age", 18, 30);
-        assertEquals("NOT (age >= 18 AND age <= 30)", builder.build());
+        assertEquals("not (age >= 18 && age <= 30)", builder.build());
     }
 
     @Test
@@ -494,7 +494,7 @@ class ConditionBuilderTest {
     void testNotBetweenConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notBetween(true, "age", 18, 30);
-        assertEquals("NOT (age >= 18 AND age <= 30)", builder.build());
+        assertEquals("not (age >= 18 && age <= 30)", builder.build());
     }
 
     @Test
@@ -504,7 +504,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("testField");
 
         builder.notBetween(fieldFunction, 10, 20);
-        assertEquals("NOT (testField >= 10 AND testField <= 20)", builder.build());
+        assertEquals("not (testField >= 10 && testField <= 20)", builder.build());
     }
 
     @Test
@@ -524,14 +524,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("testField");
 
         builder.notBetween(true, fieldFunction, 10, 20);
-        assertEquals("NOT (testField >= 10 AND testField <= 20)", builder.build());
+        assertEquals("not (testField >= 10 && testField <= 20)", builder.build());
     }
 
     @Test
     void testIsNull() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.isNull("fieldName");
-        assertEquals("fieldName IS NULL", builder.build());
+        assertEquals("fieldName is null", builder.build());
     }
 
     @Test
@@ -545,7 +545,7 @@ class ConditionBuilderTest {
     void testIsNullConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.isNull(true, "fieldName");
-        assertEquals("fieldName IS NULL", builder.build());
+        assertEquals("fieldName is null", builder.build());
     }
 
     @Test
@@ -555,7 +555,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.isNull(fieldFunction);
-        assertEquals("fieldName IS NULL", builder.build());
+        assertEquals("fieldName is null", builder.build());
     }
 
     @Test
@@ -575,14 +575,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.isNull(true, fieldFunction);
-        assertEquals("fieldName IS NULL", builder.build());
+        assertEquals("fieldName is null", builder.build());
     }
 
     @Test
     void testIsNotNull() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.isNotNull("fieldName");
-        assertEquals("fieldName IS NOT NULL", builder.build());
+        assertEquals("fieldName is not null", builder.build());
     }
 
     @Test
@@ -596,7 +596,7 @@ class ConditionBuilderTest {
     void testIsNotNullConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.isNotNull(true, "fieldName");
-        assertEquals("fieldName IS NOT NULL", builder.build());
+        assertEquals("fieldName is not null", builder.build());
     }
 
     @Test
@@ -606,7 +606,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.isNotNull(fieldFunction);
-        assertEquals("fieldName IS NOT NULL", builder.build());
+        assertEquals("fieldName is not null", builder.build());
     }
 
     @Test
@@ -626,14 +626,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.isNotNull(true, fieldFunction);
-        assertEquals("fieldName IS NOT NULL", builder.build());
+        assertEquals("fieldName is not null", builder.build());
     }
 
     @Test
     void testInSingleValue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.in("status", List.of("active"));
-        assertEquals("status IN ['active']", builder.build());
+        assertEquals("status in [\"active\"]", builder.build());
     }
 
     @Test
@@ -647,7 +647,7 @@ class ConditionBuilderTest {
     void testInConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.in(true, "status", List.of("active"));
-        assertEquals("status IN ['active']", builder.build());
+        assertEquals("status in [\"active\"]", builder.build());
     }
 
     @Test
@@ -657,7 +657,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.in(fieldFunction, List.of("active", "inactive"));
-        assertEquals("status IN ['active', 'inactive']", builder.build());
+        assertEquals("status in [\"active\", \"inactive\"]", builder.build());
     }
 
     @Test
@@ -677,14 +677,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.in(true, fieldFunction, List.of("active", "inactive"));
-        assertEquals("status IN ['active', 'inactive']", builder.build());
+        assertEquals("status in [\"active\", \"inactive\"]", builder.build());
     }
 
     @Test
     void testNotInSingleValue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notIn("status", List.of("inactive"));
-        assertEquals("NOT (status IN ['inactive'])", builder.build());
+        assertEquals("not (status in [\"inactive\"])", builder.build());
     }
 
     @Test
@@ -698,7 +698,7 @@ class ConditionBuilderTest {
     void testNotInConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notIn(true, "status", List.of("inactive"));
-        assertEquals("NOT (status IN ['inactive'])", builder.build());
+        assertEquals("not (status in [\"inactive\"])", builder.build());
     }
 
     @Test
@@ -708,7 +708,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.notIn(fieldFunction, List.of("active", "inactive"));
-        assertEquals("NOT (status IN ['active', 'inactive'])", builder.build());
+        assertEquals("not (status in [\"active\", \"inactive\"])", builder.build());
     }
 
     @Test
@@ -728,14 +728,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("status");
 
         builder.notIn(true, fieldFunction, List.of("active", "inactive"));
-        assertEquals("NOT (status IN ['active', 'inactive'])", builder.build());
+        assertEquals("not (status in [\"active\", \"inactive\"])", builder.build());
     }
 
     @Test
     void testLike() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.like("name", "value");
-        assertEquals("name LIKE '%value%'", builder.build());
+        assertEquals("name like \"%value%\"", builder.build());
     }
 
     @Test
@@ -749,7 +749,7 @@ class ConditionBuilderTest {
     void testLikeConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.like(true, "name", "value");
-        assertEquals("name LIKE '%value%'", builder.build());
+        assertEquals("name like \"%value%\"", builder.build());
     }
 
     @Test
@@ -759,7 +759,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.like(fieldFunction, "value");
-        assertEquals("fieldName LIKE '%value%'", builder.build());
+        assertEquals("fieldName like \"%value%\"", builder.build());
     }
 
     @Test
@@ -779,14 +779,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.like(true, fieldFunction, "value");
-        assertEquals("fieldName LIKE '%value%'", builder.build());
+        assertEquals("fieldName like \"%value%\"", builder.build());
     }
 
     @Test
     void testNotLike() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notLike("name", "value");
-        assertEquals("NOT (name LIKE '%value%')", builder.build());
+        assertEquals("not (name like \"%value%\")", builder.build());
     }
 
     @Test
@@ -800,7 +800,7 @@ class ConditionBuilderTest {
     void testNotLikeConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notLike(true, "name", "value");
-        assertEquals("NOT (name LIKE '%value%')", builder.build());
+        assertEquals("not (name like \"%value%\")", builder.build());
     }
 
     @Test
@@ -810,7 +810,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.notLike(fieldFunction, "value");
-        assertEquals("NOT (fieldName LIKE '%value%')", builder.build());
+        assertEquals("not (fieldName like \"%value%\")", builder.build());
     }
 
     @Test
@@ -830,14 +830,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.notLike(true, fieldFunction, "value");
-        assertEquals("NOT (fieldName LIKE '%value%')", builder.build());
+        assertEquals("not (fieldName like \"%value%\")", builder.build());
     }
 
     @Test
     void testLikeLeft() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeLeft("name", "value");
-        assertEquals("name LIKE 'value%'", builder.build());
+        assertEquals("name like \"value%\"", builder.build());
     }
 
     @Test
@@ -851,7 +851,7 @@ class ConditionBuilderTest {
     void testLikeLeftConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeLeft(true, "name", "value");
-        assertEquals("name LIKE 'value%'", builder.build());
+        assertEquals("name like \"value%\"", builder.build());
     }
 
     @Test
@@ -861,7 +861,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeLeft(fieldFunction, "value");
-        assertEquals("fieldName LIKE 'value%'", builder.build());
+        assertEquals("fieldName like \"value%\"", builder.build());
     }
 
     @Test
@@ -881,14 +881,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeLeft(true, fieldFunction, "value");
-        assertEquals("fieldName LIKE 'value%'", builder.build());
+        assertEquals("fieldName like \"value%\"", builder.build());
     }
 
     @Test
     void testLikeRight() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeRight("name", "value");
-        assertEquals("name LIKE '%value'", builder.build());
+        assertEquals("name like \"%value\"", builder.build());
     }
 
     @Test
@@ -902,7 +902,7 @@ class ConditionBuilderTest {
     void testLikeRightConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeRight(true, "name", "value");
-        assertEquals("name LIKE '%value'", builder.build());
+        assertEquals("name like \"%value\"", builder.build());
     }
 
     @Test
@@ -912,7 +912,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeRight(fieldFunction, "value");
-        assertEquals("fieldName LIKE '%value'", builder.build());
+        assertEquals("fieldName like \"%value\"", builder.build());
     }
 
     @Test
@@ -932,14 +932,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeRight(true, fieldFunction, "value");
-        assertEquals("fieldName LIKE '%value'", builder.build());
+        assertEquals("fieldName like \"%value\"", builder.build());
     }
 
     @Test
     void testJsonContains() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContains("data", "value");
-        assertEquals("JSON_CONTAINS(data, 'value')", builder.build());
+        assertEquals("JSON_CONTAINS(data, \"value\")", builder.build());
     }
 
     @Test
@@ -953,7 +953,7 @@ class ConditionBuilderTest {
     void testJsonContainsConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContains(true, "data", "value");
-        assertEquals("JSON_CONTAINS(data, 'value')", builder.build());
+        assertEquals("JSON_CONTAINS(data, \"value\")", builder.build());
     }
 
     @Test
@@ -963,7 +963,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContains(fieldFunction, "value");
-        assertEquals("JSON_CONTAINS(jsonField, 'value')", builder.build());
+        assertEquals("JSON_CONTAINS(jsonField, \"value\")", builder.build());
     }
 
     @Test
@@ -983,14 +983,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContains(true, fieldFunction, "value");
-        assertEquals("JSON_CONTAINS(jsonField, 'value')", builder.build());
+        assertEquals("JSON_CONTAINS(jsonField, \"value\")", builder.build());
     }
 
     @Test
     void testNotJsonContains() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notJsonContains("data", "value");
-        assertEquals("NOT (JSON_CONTAINS(data, 'value'))", builder.build());
+        assertEquals("not (JSON_CONTAINS(data, \"value\"))", builder.build());
     }
 
     @Test
@@ -1004,7 +1004,7 @@ class ConditionBuilderTest {
     void testNotJsonContainsConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notJsonContains(true, "data", "value");
-        assertEquals("NOT (JSON_CONTAINS(data, 'value'))", builder.build());
+        assertEquals("not (JSON_CONTAINS(data, \"value\"))", builder.build());
     }
 
     @Test
@@ -1014,7 +1014,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("data");
 
         builder.notJsonContains(fieldFunction, "value");
-        assertEquals("NOT (JSON_CONTAINS(data, 'value'))", builder.build());
+        assertEquals("not (JSON_CONTAINS(data, \"value\"))", builder.build());
     }
 
     @Test
@@ -1034,14 +1034,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("data");
 
         builder.notJsonContains(true, fieldFunction, "value");
-        assertEquals("NOT (JSON_CONTAINS(data, 'value'))", builder.build());
+        assertEquals("not (JSON_CONTAINS(data, \"value\"))", builder.build());
     }
 
     @Test
     void testJsonContainsAll() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContainsAll("data", List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ALL(data, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ALL(data, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1055,7 +1055,7 @@ class ConditionBuilderTest {
     void testJsonContainsAllConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContainsAll(true, "data", List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ALL(data, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ALL(data, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1065,7 +1065,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContainsAll(fieldFunction, List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ALL(jsonField, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ALL(jsonField, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1085,14 +1085,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContainsAll(true, fieldFunction, List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ALL(jsonField, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ALL(jsonField, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
     void testJsonContainsAny() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContainsAny("data", List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ANY(data, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ANY(data, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1106,7 +1106,7 @@ class ConditionBuilderTest {
     void testJsonContainsAnyConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.jsonContainsAny(true, "data", List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ANY(data, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ANY(data, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1116,7 +1116,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContainsAny(fieldFunction, List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ANY(jsonField, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ANY(jsonField, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1136,14 +1136,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("jsonField");
 
         builder.jsonContainsAny(true, fieldFunction, List.of("value1", "value2"));
-        assertEquals("JSON_CONTAINS_ANY(jsonField, ['value1', 'value2'])", builder.build());
+        assertEquals("JSON_CONTAINS_ANY(jsonField, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
     void testArrayContainsSingleValue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContains("items", "value");
-        assertEquals("ARRAY_CONTAINS(items, 'value')", builder.build());
+        assertEquals("ARRAY_CONTAINS(items, \"value\")", builder.build());
     }
 
     @Test
@@ -1157,7 +1157,7 @@ class ConditionBuilderTest {
     void testArrayContainsConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContains(true, "items", "value");
-        assertEquals("ARRAY_CONTAINS(items, 'value')", builder.build());
+        assertEquals("ARRAY_CONTAINS(items, \"value\")", builder.build());
     }
 
     @Test
@@ -1167,7 +1167,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContains(fieldFunction, "value");
-        assertEquals("ARRAY_CONTAINS(items, 'value')", builder.build());
+        assertEquals("ARRAY_CONTAINS(items, \"value\")", builder.build());
     }
 
     @Test
@@ -1187,14 +1187,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContains(true, fieldFunction, "value");
-        assertEquals("ARRAY_CONTAINS(items, 'value')", builder.build());
+        assertEquals("ARRAY_CONTAINS(items, \"value\")", builder.build());
     }
 
     @Test
     void testNotArrayContains() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notArrayContains("items", "value");
-        assertEquals("NOT (ARRAY_CONTAINS(items, 'value'))", builder.build());
+        assertEquals("not (ARRAY_CONTAINS(items, \"value\"))", builder.build());
     }
 
     @Test
@@ -1208,7 +1208,7 @@ class ConditionBuilderTest {
     void testNotArrayContainsConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.notArrayContains(true, "items", "value");
-        assertEquals("NOT (ARRAY_CONTAINS(items, 'value'))", builder.build());
+        assertEquals("not (ARRAY_CONTAINS(items, \"value\"))", builder.build());
     }
 
     @Test
@@ -1218,7 +1218,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.notArrayContains(fieldFunction, "value");
-        assertEquals("NOT (ARRAY_CONTAINS(items, 'value'))", builder.build());
+        assertEquals("not (ARRAY_CONTAINS(items, \"value\"))", builder.build());
     }
 
     @Test
@@ -1238,14 +1238,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.notArrayContains(true, fieldFunction, "value");
-        assertEquals("NOT (ARRAY_CONTAINS(items, 'value'))", builder.build());
+        assertEquals("not (ARRAY_CONTAINS(items, \"value\"))", builder.build());
     }
 
     @Test
     void testArrayContainsAllWithValidValues() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContainsAll("items", List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ALL(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ALL(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1259,7 +1259,7 @@ class ConditionBuilderTest {
     void testArrayContainsAllConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContainsAll(true, "items", List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ALL(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ALL(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1269,7 +1269,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContainsAll(fieldFunction, List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ALL(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ALL(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1289,14 +1289,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContainsAll(true, fieldFunction, List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ALL(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ALL(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
     void testArrayContainsAny() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContainsAny("items", List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ANY(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ANY(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1310,7 +1310,7 @@ class ConditionBuilderTest {
     void testArrayContainsAnyConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.arrayContainsAny(true, "items", List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ANY(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ANY(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1320,7 +1320,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContainsAny(fieldFunction, List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ANY(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ANY(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1340,7 +1340,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("items");
 
         builder.arrayContainsAny(true, fieldFunction, List.of("value1", "value2"));
-        assertEquals("ARRAY_CONTAINS_ANY(items, ['value1', 'value2'])", builder.build());
+        assertEquals("ARRAY_CONTAINS_ANY(items, [\"value1\", \"value2\"])", builder.build());
     }
 
     @Test
@@ -1401,7 +1401,7 @@ class ConditionBuilderTest {
 
         builder1.or(builder2 -> builder2.ne("status", "inactive"));
 
-        assertEquals("(age == 25 OR status != 'inactive')", builder1.build());
+        assertEquals("(age == 25 || status != \"inactive\")", builder1.build());
     }
 
     @Test
@@ -1420,7 +1420,7 @@ class ConditionBuilderTest {
         builder.eq("age", 30);
         builder.or(b -> b.ne("status", "active"));
 
-        assertEquals("(age == 30 OR status != 'active')", builder.build());
+        assertEquals("(age == 30 || status != \"active\")", builder.build());
     }
 
     @Test
@@ -1429,7 +1429,7 @@ class ConditionBuilderTest {
         builder.gt("score", 90);
         builder.or(true, b -> b.lt("score", 100));
 
-        assertEquals("(score > 90 OR score < 100)", builder.build());
+        assertEquals("(score > 90 || score < 100)", builder.build());
     }
 
     @Test
@@ -1437,7 +1437,7 @@ class ConditionBuilderTest {
         TestConditionBuilder builder = createBuilderInstance();
         builder.eq("name", "John");
         builder.not();
-        assertEquals("NOT (name == 'John')", builder.build());
+        assertEquals("not (name == \"John\")", builder.build());
     }
 
     @Test
@@ -1452,7 +1452,7 @@ class ConditionBuilderTest {
         TestConditionBuilder builder = createBuilderInstance();
         builder.eq("age", 25).ne("status", "inactive");
         builder.not();
-        assertEquals("NOT (age == 25 AND status != 'inactive')", builder.build());
+        assertEquals("not (age == 25 && status != \"inactive\")", builder.build());
     }
 
     @Test
@@ -1460,7 +1460,7 @@ class ConditionBuilderTest {
         TestConditionBuilder builder = createBuilderInstance();
         builder.eq("name", "Paul");
         builder.not(false);
-        assertEquals("name == 'Paul'", builder.build());
+        assertEquals("name == \"Paul\"", builder.build());
     }
 
     @Test
@@ -1470,7 +1470,7 @@ class ConditionBuilderTest {
 
         builder1.and(builder2 -> builder2.ne("status", "inactive"));
 
-        assertEquals("(age == 25 AND status != 'inactive')", builder1.build());
+        assertEquals("(age == 25 && status != \"inactive\")", builder1.build());
     }
 
     @Test
@@ -1490,7 +1490,7 @@ class ConditionBuilderTest {
         builder.eq("name", "John");
         builder.and(b -> b.gt("score", 85));
 
-        assertEquals("(name == 'John' AND score > 85)", builder.build());
+        assertEquals("(name == \"John\" && score > 85)", builder.build());
     }
 
     @Test
