@@ -885,7 +885,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W likeLeft(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "LIKE 操作的值不能为空");
-        filters.add(String.format("%s like \"%s%%\"",
+        filters.add(String.format("%s like \"%%%s\"",
                 wrapFieldName(fieldName), escapeValue(value)));
         return (W) this;
     }
@@ -935,7 +935,7 @@ public abstract class ConditionBuilder<T, W extends ConditionBuilder<T, W>> {
     public W likeRight(String fieldName, String value) {
         validateFieldName(fieldName);
         validateNotEmpty(value, "LIKE 操作的值不能为空");
-        filters.add(String.format("%s like \"%%%s\"",
+        filters.add(String.format("%s like \"%s%%\"",
                 wrapFieldName(fieldName), escapeValue(value)));
         return (W) this;
     }
