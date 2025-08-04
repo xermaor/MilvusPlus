@@ -265,7 +265,7 @@ public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrappe
     private SearchReq buildSearch() {
         SearchReq.SearchReqBuilder<?, ?> builder = SearchReq.builder()
                 .collectionName(StringUtils.isNotBlank(collectionAlias) ? collectionAlias : collectionName);
-        if (annsField != null && !annsField.isEmpty()) {
+        if (StringUtils.isNotBlank(annsField)) {
             builder.annsField(annsField);
         }
         if (consistencyLevel != null) {
@@ -287,14 +287,17 @@ public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrappe
         if (offset > 0) {
             builder.offset(offset);
         }
-        if (!CollectionUtils.isEmpty(partitionNames)) {
+        if (CollectionUtils.isNotEmpty(partitionNames)) {
             builder.partitionNames(partitionNames);
         }
-        if (outputFields != null && !outputFields.isEmpty()) {
+        Collection<String> collectionFields = conversionCache.propertyCache().functionToPropertyMap.values();
+        if (CollectionUtils.isNotEmpty(outputFields)) {
+            if (outputFields.retainAll(collectionFields)) {
+                log.warn("Fields not included in this collection in outputFields have been removed.");
+            }
             builder.outputFields(outputFields);
         } else {
-            Collection<String> values = conversionCache.propertyCache().functionToPropertyMap.values();
-            builder.outputFields(new ArrayList<>(values));
+            builder.outputFields(new ArrayList<>(collectionFields));
         }
         if (!searchParams.isEmpty()) {
             builder.searchParams(searchParams);
@@ -311,7 +314,7 @@ public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrappe
         if (ignoreGrowing != null) {
             builder.ignoreGrowing(ignoreGrowing);
         }
-        if (groupByFieldName != null && !groupByFieldName.isEmpty()) {
+        if (StringUtils.isNotBlank(groupByFieldName)) {
             builder.groupByFieldName(groupByFieldName);
         }
         if (groupSize != null && groupSize > 0) {
@@ -346,36 +349,39 @@ public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrappe
         if (CollectionUtils.isNotEmpty(partitionNames)) {
             builder.partitionNames(partitionNames);
         }
-        if (outputFields != null && !outputFields.isEmpty()) {
-            builder.outputFields(outputFields);
+        Collection<String> collectionFields = conversionCache.propertyCache().functionToPropertyMap.values();
+        if (CollectionUtils.isNotEmpty(outputFields)) {
+            if (outputFields.retainAll(collectionFields)) {
+                log.warn("Fields not included in this collection in outputFields have been removed.");
+            }
         } else {
-            Collection<String> values = conversionCache.propertyCache().functionToPropertyMap.values();
-            builder.outputFields(new ArrayList<>(values));
+            builder.outputFields(new ArrayList<>(collectionFields));
         }
         return builder.build();
     }
 
     private HybridSearchReq buildHybrid() {
         //混合查询
-        List<AnnSearchReq> searchRequests = hybridWrapper.stream().filter(v -> StringUtils.isNotEmpty(v.annsField) && !v.vectors.isEmpty()).map(
-                v -> {
+        List<AnnSearchReq> searchRequests = hybridWrapper.stream()
+                .filter(wrapper -> StringUtils.isNotEmpty(wrapper.annsField) && !wrapper.vectors.isEmpty())
+                .map(wrapper -> {
                     AnnSearchReq.AnnSearchReqBuilder<?, ?> annBuilder = AnnSearchReq.builder()
-                            .vectorFieldName(v.annsField)
-                            .vectors(v.vectors);
-                    if (v.topK > 0) {
-                        annBuilder.topK(v.topK);
+                            .vectorFieldName(wrapper.annsField)
+                            .vectors(wrapper.vectors);
+                    if (wrapper.topK > 0) {
+                        annBuilder.topK(wrapper.topK);
                     }
-                    String expr = v.build();
+                    String expr = wrapper.build();
                     if (StringUtils.isNotEmpty(expr)) {
                         annBuilder.expr(expr);
                     }
-                    Map<String, Object> params = v.searchParams;
+                    Map<String, Object> params = wrapper.searchParams;
                     if (!params.isEmpty()) {
                         annBuilder.params(GsonUtil.toJson(params));
                     }
                     return annBuilder.build();
-                }
-        ).collect(Collectors.toList());
+                })
+                .collect(Collectors.toList());
         HybridSearchReq.HybridSearchReqBuilder<?, ?> reqBuilder = HybridSearchReq.builder()
                 .collectionName(collectionName)
                 .searchRequests(searchRequests);
@@ -388,13 +394,16 @@ public class LambdaQueryWrapper<T> extends ConditionBuilder<T, LambdaQueryWrappe
         if (consistencyLevel != null) {
             reqBuilder.consistencyLevel(consistencyLevel);
         }
-        if (outputFields != null && !outputFields.isEmpty()) {
+        Collection<String> collectionFields = conversionCache.propertyCache().functionToPropertyMap.values();
+        if (CollectionUtils.isNotEmpty(outputFields)) {
+            if (outputFields.retainAll(collectionFields)) {
+                log.warn("Fields not included in this collection in outputFields have been removed.");
+            }
             reqBuilder.outFields(outputFields);
         } else {
-            Collection<String> values = conversionCache.propertyCache().functionToPropertyMap.values();
-            reqBuilder.outFields(new ArrayList<>(values));
+            reqBuilder.outFields(new ArrayList<>(collectionFields));
         }
-        if (!CollectionUtils.isEmpty(partitionNames)) {
+        if (CollectionUtils.isNotEmpty(partitionNames)) {
             reqBuilder.partitionNames(partitionNames);
         }
         if (roundDecimal != -1) {
