@@ -837,7 +837,7 @@ class ConditionBuilderTest {
     void testLikeLeft() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeLeft("name", "value");
-        assertEquals("name like \"value%\"", builder.build());
+        assertEquals("name like \"%value\"", builder.build());
     }
 
     @Test
@@ -851,7 +851,7 @@ class ConditionBuilderTest {
     void testLikeLeftConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeLeft(true, "name", "value");
-        assertEquals("name like \"value%\"", builder.build());
+        assertEquals("name like \"%value\"", builder.build());
     }
 
     @Test
@@ -861,7 +861,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeLeft(fieldFunction, "value");
-        assertEquals("fieldName like \"value%\"", builder.build());
+        assertEquals("fieldName like \"%value\"", builder.build());
     }
 
     @Test
@@ -881,14 +881,14 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeLeft(true, fieldFunction, "value");
-        assertEquals("fieldName like \"value%\"", builder.build());
+        assertEquals("fieldName like \"%value\"", builder.build());
     }
 
     @Test
     void testLikeRight() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeRight("name", "value");
-        assertEquals("name like \"%value\"", builder.build());
+        assertEquals("name like \"value%\"", builder.build());
     }
 
     @Test
@@ -902,7 +902,7 @@ class ConditionBuilderTest {
     void testLikeRightConditionTrue() {
         TestConditionBuilder builder = createBuilderInstance();
         builder.likeRight(true, "name", "value");
-        assertEquals("name like \"%value\"", builder.build());
+        assertEquals("name like \"value%\"", builder.build());
     }
 
     @Test
@@ -912,7 +912,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeRight(fieldFunction, "value");
-        assertEquals("fieldName like \"%value\"", builder.build());
+        assertEquals("fieldName like \"value%\"", builder.build());
     }
 
     @Test
@@ -932,7 +932,7 @@ class ConditionBuilderTest {
         when(fieldFunction.getFieldName(fieldFunction)).thenReturn("fieldName");
 
         builder.likeRight(true, fieldFunction, "value");
-        assertEquals("fieldName like \"%value\"", builder.build());
+        assertEquals("fieldName like \"value%\"", builder.build());
     }
 
     @Test
